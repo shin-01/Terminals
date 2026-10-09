@@ -24,10 +24,6 @@ jobs:
         uses: NuGet/setup-nuget@v2
       - name: Restore Packages
         run: nuget restore ${{ env.SLN_FILE_PATH }}
-      - name: Build solution
-        run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
-      - name: Setup VSTest
-        uses: darenm/Setup-VSTest@v1.2
       - name: Install a SQL Server suite of tools
         uses: potatoqualitee/mssqlsuite@v2
         with:
@@ -56,6 +52,10 @@ jobs:
           Copy-Item $ldf "$src\Terminals_log.LDF" -Force
           attrib -r "$src\Terminals.mdf"
           attrib -r "$src\Terminals_log.LDF"
+      - name: Build solution
+        run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
+      - name: Setup VSTest
+        uses: darenm/Setup-VSTest@v1.2
       - name: Test
         run: vstest.console.exe /logger:"trx;LogFileName=test_results.trx" Source\Tests\bin\Release\Tests.dll
       - name: Test Report
