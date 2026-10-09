@@ -79,10 +79,10 @@
         <File Source="..\Terminals\terminalsicon.ico" KeyPath="yes"/>
       </Component>
       <Component Id="NewtonsoftJsondll" Guid="CFB96E07-01CB-42DE-949F-8CA36DA08E2C">
-        <File Source="..\packages\Newtonsoft.Json.10.0.2\lib\net40\Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
       </Component> 
       <Component Id="NewtonsoftJsonxml" Guid="2D006559-AE17-439A-A379-7876483CEB25">
-        <File Source="..\packages\Newtonsoft.Json.10.0.2\lib\net40\Newtonsoft.Json.xml" KeyPath="yes" Checksum="yes"/>
+        <File Source="..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.xml" KeyPath="yes" Checksum="yes"/>
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="IcaComponents" Directory="ICAFOLDER">
