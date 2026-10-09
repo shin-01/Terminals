@@ -28,7 +28,9 @@ jobs:
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
       - name: Restore Packages
-        run: msbuild ${{ env.SLN_FILE_PATH }} -t:restore -property:Configuration=Release
+        run: |
+          nuget install Microsoft.VisualStudio.QualityTools.UnitTestFramework.Updated -Version 15.0.26228 -OutputDirectory Source/packages -ExcludeVersion
+          msbuild ${{ env.SLN_FILE_PATH }} -t:restore -property:Configuration=Release
       - name: Recreate test database from creation script
         shell: pwsh
         run: |
