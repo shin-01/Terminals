@@ -116,21 +116,28 @@ namespace Tests.SqlPersisted
 
         internal static void AssignDeploymentDirConnectionString(Settings settings, string deploymentDir)
         {
+            ClearReadOnlyAttributes(deploymentDir);
             // Atleast to be able assign new connection string. Becasue of this we need application restart after persistence is changed.
             settings.PersistenceSecurity = new SqlPersistenceSecurity(); 
             settings.ConnectionString = String.Format(CONNECTION_STRING, deploymentDir);
         }
 
-        private void RemoveDatabaseFileReadOnly()
+        internal static void ClearReadOnlyAttributes(string deploymentDir)
         {
-            this.RemoveReadOnlyAttribute(DBF_FILE_NAME);
-            this.RemoveReadOnlyAttribute("Terminals_log.ldf");
+            RemoveReadOnlyAttribute(deploymentDir, DBF_FILE_NAME);
+            RemoveReadOnlyAttribute(deploymentDir, "Terminals_log.ldf");
         }
 
-        private void RemoveReadOnlyAttribute(string fileName)
+        private static void RemoveReadOnlyAttribute(string deploymentDir, string fileName)
         {
-            string databaseMdf = Path.Combine(this.TestContext.DeploymentDirectory, fileName);
-            File.SetAttributes(databaseMdf, FileAttributes.Normal);
+            string databaseFile = Path.Combine(deploymentDir, fileName);
+            if (File.Exists(databaseFile))
+                File.SetAttributes(databaseFile, FileAttributes.Normal);
+        }
+
+        private void RemoveDatabaseFileReadOnly()
+        {
+            ClearReadOnlyAttributes(this.TestContext.DeploymentDirectory);
         }
 
         /// <summary>
