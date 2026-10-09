@@ -6,6 +6,8 @@
     <AssemblyName>Terminals</AssemblyName>
     <RootNamespace>Terminals</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>false</Deterministic>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>terminalsicon.ico</ApplicationIcon>
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath Condition="'$(Configuration)'=='Debug'">..\..\Build\Output\Debug\</OutputPath>
