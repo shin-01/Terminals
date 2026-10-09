@@ -57,6 +57,16 @@ jobs:
         run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
       - name: Setup VSTest
         uses: darenm/Setup-VSTest@v1.2
+      - name: Diagnose deployed test database
+        shell: pwsh
+        run: |
+          $bin = Join-Path $PWD "Source\Tests\bin\Release"
+          Get-ChildItem $bin -Filter "Terminals*" | Format-Table Name, IsReadOnly, Length
+          attrib -r "$bin\Terminals.mdf"
+          attrib -r "$bin\Terminals_log.LDF"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_Diag] ON (FILENAME = N'$(Join-Path $bin "Terminals.mdf")'), (FILENAME = N'$(Join-Path $bin "Terminals_log.LDF")') FOR ATTACH"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT name, is_read_only FROM sys.databases WHERE name = 'Terminals_Diag'"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'Terminals_Diag'"
       - name: Test
         run: vstest.console.exe /logger:"trx;LogFileName=test_results.trx" Source\Tests\bin\Release\Tests.dll
       - name: Test Report
