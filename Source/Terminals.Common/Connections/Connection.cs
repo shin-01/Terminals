@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Terminals.Common.Properties;
@@ -54,8 +55,18 @@ namespace Terminals.Connections
 
         protected void Log(string text)
         {
-            if (this.OnLog != null)
-                this.OnLog(text);
+            var handlers = this.OnLog;
+            if (handlers != null)
+            {
+                try
+                {
+                    handlers(text);
+                }
+                catch (Exception exc)
+                {
+                    Logging.Error("Error raising connection log event", exc);
+                }
+            }
         }
 
         /// <summary>
@@ -75,8 +86,18 @@ namespace Terminals.Connections
         /// </summary>
         protected void FireDisconnected()
         {
-            if (this.OnDisconnected != null)
-                this.OnDisconnected(this);
+            var handlers = this.OnDisconnected;
+            if (handlers != null)
+            {
+                try
+                {
+                    handlers(this);
+                }
+                catch (Exception exc)
+                {
+                    Logging.Error("Error raising connection disconnected event", exc);
+                }
+            }
         }
 
         protected IGuardedSecurity ResolveFavoriteCredentials()

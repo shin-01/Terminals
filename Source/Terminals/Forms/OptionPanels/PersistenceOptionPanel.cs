@@ -133,6 +133,15 @@ namespace Terminals.Forms
 
         private void ShowConnectionTestResult(Task<TestConnectionResult> antecedent)
         {
+            if (antecedent.IsFaulted)
+            {
+                Logging.Error("Database connection test failed.", antecedent.Exception);
+                var failure = antecedent.Exception != null && antecedent.Exception.InnerException != null
+                    ? antecedent.Exception.InnerException.Message
+                    : "Unknown error";
+                MessageBox.Show(string.Format("Test database failed.\r\nReason:{0}", failure), MESSAGE_HEADER, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             TestConnectionResult connectionResult = antecedent.Result;
 
             if (connectionResult.Successful)
@@ -181,7 +190,14 @@ namespace Terminals.Forms
 
             t.ContinueWith((antecedent) =>
                 {
-                    this.FillServersComboboxItems(antecedent.Result);
+                    if (antecedent.IsFaulted)
+                    {
+                        Logging.Error("Failed to find SQL server instances.", antecedent.Exception);
+                    }
+                    else
+                    {
+                        this.FillServersComboboxItems(antecedent.Result);
+                    }
                     this.queryLabel.Visible = false;
                 }, TaskScheduler.FromCurrentSynchronizationContext());
         }
@@ -205,6 +221,12 @@ namespace Terminals.Forms
 
         private void FinishDatabasesReload(Task<List<string>> antecedent)
         {
+            if (antecedent.IsFaulted)
+            {
+                Logging.Error("Failed to find databases on server.", antecedent.Exception);
+                tableQueryLabel.Visible = false;
+                return;
+            }
             object[] databases = antecedent.Result.Cast<object>().ToArray();
             this.databaseCombobox.Items.Clear();
             this.databaseCombobox.Items.AddRange(databases);
@@ -300,6 +322,15 @@ namespace Terminals.Forms
         private void ShowPasswordSetResult(Task<TestConnectionResult> task)
         {
             const string header = "Set new database password";
+            if (task.IsFaulted)
+            {
+                Logging.Error("Failed to set new database password.", task.Exception);
+                var failure = task.Exception != null && task.Exception.InnerException != null
+                    ? task.Exception.InnerException.Message
+                    : "Unknown error";
+                MessageBox.Show(failure, header, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             var result = task.Result;
             if (result.Successful)
             {
