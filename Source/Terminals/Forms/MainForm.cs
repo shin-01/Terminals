@@ -474,6 +474,13 @@ namespace Terminals
 
         private void CheckForNewRelease(Task<ReleaseInfo> downloadTask)
         {
+            if (downloadTask.IsFaulted)
+            {
+                Logging.Error("Failed to check for new release.", downloadTask.Exception);
+                return;
+            }
+            if (downloadTask.IsCanceled)
+                return;
             ReleaseInfo downloaded = downloadTask.Result;
             if (downloaded.NewAvailable && !settings.NeverShowTerminalsWindow)
                 ExternalLinks.AskIfShowReleasePage(this.settings, downloaded);

@@ -176,6 +176,12 @@ namespace Terminals
 
         private void ShowRebootResult(Task<string> shutdownTask)
         {
+            if (shutdownTask.IsFaulted)
+            {
+                Logging.Error("Remote shutdown operation failed.", shutdownTask.Exception);
+                MessageBox.Show("The remote operation failed. See log for details.", "Remote action result", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             MessageBox.Show(shutdownTask.Result, "Remote action result", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -210,6 +216,11 @@ namespace Terminals
 
         private void ShowEnableRdpResult(Task<bool?> enableRdpTask)
         {
+            if (enableRdpTask.IsFaulted)
+            {
+                Logging.Error("Remote enable RDP operation failed.", enableRdpTask.Exception);
+                return;
+            }
             bool? operationResult = enableRdpTask.Result;
             if (operationResult.HasValue)
                 this.ShowEnableRdpResult(operationResult.Value);

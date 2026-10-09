@@ -159,8 +159,11 @@ namespace Terminals.Network
                     this.pingSender = null;
                 }
 
-                this.timer.Dispose();
-                this.timer = null;
+                if (this.timer != null)
+                {
+                    this.timer.Dispose();
+                    this.timer = null;
+                }
             }
 
             this.ResetForm();
@@ -230,7 +233,7 @@ namespace Terminals.Network
 
                 ((AutoResetEvent)e.UserState).Set();
 
-                if (e.Reply.Status == IPStatus.Success)
+                if (e.Reply != null && e.Reply.Status == IPStatus.Success && e.Reply.Options != null)
                 {
                     lock (this.threadLocker)
                     {
@@ -248,11 +251,11 @@ namespace Terminals.Network
                             this.pingList.Add(pd);
                         }
 
-                        this.Invoke(this.DoUpdateForm);
+                        this.TryInvokeUpdateForm();
                         this.pingReady = true;
                     }
                 }
-                else if (!e.Cancelled)
+                else if (e.Reply != null && !e.Cancelled)
                 {
                     String status = String.Empty;
                     switch (e.Reply.Status)
@@ -268,7 +271,8 @@ namespace Terminals.Network
 
                     lock (this.threadLocker)
                     {
-                        this.pingSender.SendAsyncCancel();
+                        if (this.pingSender != null)
+                            this.pingSender.SendAsyncCancel();
                         PingReplyData pd = new PingReplyData(
                             this.counter++, status, String.Empty, String.Empty, 0, 0, 0);
 
@@ -277,7 +281,7 @@ namespace Terminals.Network
                             this.pingList.Add(pd);
                         }
 
-                        this.Invoke(this.DoUpdateForm);
+                        this.TryInvokeUpdateForm();
                         this.pingReady = true;
                     }
                 }
@@ -289,6 +293,22 @@ namespace Terminals.Network
             finally
             {
                 ((AutoResetEvent)e.UserState).Set();
+            }
+        }
+
+        /// <summary>
+        /// Marshals the form update onto the UI thread, if the control is still alive.
+        /// </summary>
+        private void TryInvokeUpdateForm()
+        {
+            if (this.InvokeRequired)
+            {
+                if (this.IsHandleCreated && !this.IsDisposed)
+                    this.BeginInvoke(this.DoUpdateForm);
+            }
+            else
+            {
+                this.DoUpdateForm();
             }
         }
 
