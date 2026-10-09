@@ -33,6 +33,23 @@ jobs:
         with:
           install: localdb
           show-log: true
+      - name: Upgrade test database to LocalDB 2022 format
+        shell: pwsh
+        run: |
+          $src = Join-Path $PWD "Resources\Database"
+          $tmp = Join-Path $env:RUNNER_TEMP "dbupgrade"
+          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+          Copy-Item "$src\Terminals.mdf" $tmp -Force
+          Copy-Item "$src\Terminals_log.LDF" $tmp -Force
+          Get-ChildItem $tmp | ForEach-Object { $_.IsReadOnly = $false }
+          $mdf = "$tmp\Terminals.mdf"
+          $ldf = "$tmp\Terminals_log.LDF"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_TestUpgrade] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "IF DB_ID('Terminals_TestUpgrade') IS NOT NULL EXEC sp_detach_db 'Terminals_TestUpgrade'"
+          Copy-Item $mdf "$src\Terminals.mdf" -Force
+          Copy-Item $ldf "$src\Terminals_log.LDF" -Force
+          attrib -r "$src\Terminals.mdf"
+          attrib -r "$src\Terminals_log.LDF"
       - name: Test
         run: vstest.console.exe /logger:"trx;LogFileName=test_results.trx" Source\Tests\bin\Release\Tests.dll
       - name: Test Report
