@@ -6,6 +6,7 @@
     <AssemblyName>Metro</AssemblyName>
     <RootNamespace>Metro</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
