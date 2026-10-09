@@ -48,6 +48,11 @@ jobs:
         run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
       - name: Setup VSTest
         uses: darenm/Setup-VSTest@v1.2
+      - name: Grant SQL Server write access to workspace files
+        shell: pwsh
+        run: |
+          icacls "D:\a\Terminals\Terminals" /grant "Everyone:(OI)(CI)F" /T | Out-Null
+          Write-Host "ACL granted on workspace"
       - name: Test
         run: vstest.console.exe /logger:"trx;LogFileName=test_results.trx" Source\Tests\bin\Release\Tests.dll
       - name: Test Report
