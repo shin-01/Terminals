@@ -47,6 +47,7 @@ jobs:
           $ldf = "$tmp\Terminals_log.LDF"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_TestUpgrade] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "IF DB_ID('Terminals_TestUpgrade') IS NOT NULL ALTER DATABASE [Terminals_TestUpgrade] SET READ_WRITE"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -d Terminals_TestUpgrade -Q "CHECKPOINT"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT name, is_read_only FROM sys.databases WHERE name = 'Terminals_TestUpgrade'"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'Terminals_TestUpgrade'"
           Write-Host "Copying upgraded database back to repo"
@@ -54,6 +55,10 @@ jobs:
           Copy-Item $ldf "$src\Terminals_log.LDF" -Force
           attrib -r "$src\Terminals.mdf"
           attrib -r "$src\Terminals_log.LDF"
+          Write-Host "Verify copied back database is writable"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_Verify] ON (FILENAME = N'$(Join-Path $src "Terminals.mdf")'), (FILENAME = N'$(Join-Path $src "Terminals_log.LDF")') FOR ATTACH"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT name, is_read_only FROM sys.databases WHERE name = 'Terminals_Verify'"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'Terminals_Verify'"
       - name: Build solution
         run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
       - name: Setup VSTest
