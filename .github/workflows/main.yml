@@ -18,21 +18,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Install a SQL Server suite of tools
+        uses: potatoqualitee/mssqlsuite@v2
+        with:
+          install: localdb
+          show-log: true
       - name: Setup-msbuild
         uses: microsoft/setup-msbuild@v2
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
       - name: Restore Packages
         run: nuget restore ${{ env.SLN_FILE_PATH }}
-      - name: Build solution
-        run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
-      - name: Setup VSTest
-        uses: darenm/Setup-VSTest@v1.2
-      - name: Install a SQL Server suite of tools
-        uses: potatoqualitee/mssqlsuite@v2
-        with:
-          install: localdb
-          show-log: true
       - name: Upgrade test database to LocalDB 2022 format
         shell: pwsh
         run: |
@@ -42,6 +38,8 @@ jobs:
           Copy-Item "$src\Terminals.mdf" $tmp -Force
           Copy-Item "$src\Terminals_log.LDF" $tmp -Force
           Get-ChildItem $tmp | ForEach-Object { $_.IsReadOnly = $false }
+          attrib -r "$tmp\Terminals.mdf"
+          attrib -r "$tmp\Terminals_log.LDF"
           $mdf = "$tmp\Terminals.mdf"
           $ldf = "$tmp\Terminals_log.LDF"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_TestUpgrade] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
@@ -50,6 +48,10 @@ jobs:
           Copy-Item $ldf "$src\Terminals_log.LDF" -Force
           attrib -r "$src\Terminals.mdf"
           attrib -r "$src\Terminals_log.LDF"
+      - name: Build solution
+        run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
+      - name: Setup VSTest
+        uses: darenm/Setup-VSTest@v1.2
       - name: Test
         run: vstest.console.exe /logger:"trx;LogFileName=test_results.trx" Source\Tests\bin\Release\Tests.dll
       - name: Test Report
