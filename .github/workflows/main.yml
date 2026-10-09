@@ -45,7 +45,7 @@ jobs:
           attrib -r "$tmp\Terminals.mdf"
           attrib -r "$tmp\Terminals_log.LDF"
           icacls $tmp /grant "${env:USERNAME}:(OI)(CI)F" | Out-Null
-          Write-Host "Files in $tmp:"
+          Write-Host "Files in $($tmp):"
           Get-ChildItem $tmp | Format-Table Name, IsReadOnly, Length
           $mdf = "$tmp\Terminals.mdf"
           $ldf = "$tmp\Terminals_log.LDF"
