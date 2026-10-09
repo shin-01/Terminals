@@ -4,8 +4,8 @@ using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Terminals.Common.Connections;
-using Terminals.Connections.VNC;
 using Terminals.Data;
+using Terminals.Plugins.Putty;
 using Terminals.Forms;
 using Terminals.Forms.EditFavorite;
 using Tests.Connections;
@@ -97,14 +97,14 @@ namespace Tests.UserInterface
         }
 
         [TestMethod]
-        public void VncProcol_LoadSave_KeepsProtocolPropertiesType()
+        public void SshProcol_LoadSave_KeepsProtocolPropertiesType()
         {
             this.LoadPropertiesControl();
             Favorite source = TestMocksFactory.CreateFavorite(this.groups);
-            source.Protocol = VncConnectionPlugin.VNC;
+            source.Protocol = SshConnectionPlugin.SSH;
             Favorite result = this.LoadAndSaveToResult(source);
             const string PROTOCOL_MESSAGE = "Roundtrip has to preserve the protocol properties";
-            var expectedType = typeof(VncOptions).FullName;
+            var expectedType = typeof(SshOptions).FullName;
             string protocolProperties = result.ProtocolProperties.GetType().FullName;
             Assert.AreEqual(protocolProperties, expectedType, PROTOCOL_MESSAGE);
         }

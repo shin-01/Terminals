@@ -197,8 +197,6 @@
     <Compile Include="UserInterface\ProtocolImageListBuilderTests.cs" />
     <Compile Include="UserInterface\FavoriteIconsTests.cs" />
     <Compile Include="UserInterface\ToolTipBuilderTests.cs" />
-    <Compile Include="UserInterface\VncMenuVisitorTests.cs" />
-    <Compile Include="UserInterface\VmrcMenuVisitorTests.cs" />
     <Compile Include="Validation\DbValidationTests.cs" />
     <Compile Include="Validation\FavoriteNameValidatorTests.cs" />
     <Compile Include="Validation\FileValidationTests.cs" />
@@ -240,10 +238,6 @@
       <Project>{FCD4BECA-9923-4BB0-BF57-8E8BCD0F784C}</Project>
       <Name>Terminals.External</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Terminals.Plugins.Ica\Terminals.Plugins.Ica.csproj">
-      <Project>{bb4a4cc7-c449-4f81-8395-7806cc1bdfa8}</Project>
-      <Name>Terminals.Plugins.Ica</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terminals.Plugins.Putty\Terminals.Plugins.Putty.csproj">
       <Project>{449DC14A-7C3F-4BE5-BA39-4AFD1C5404E6}</Project>
       <Name>Terminals.Plugins.Putty</Name>
@@ -252,25 +246,9 @@
       <Project>{f0c60ed2-9a47-4364-af57-505bc3e953d5}</Project>
       <Name>Terminals.Plugins.Rdp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Terminals.Plugins.Vmrc\Terminals.Plugins.Vmrc.csproj">
-      <Project>{c841ccf6-4793-41b7-835e-f749e2525963}</Project>
-      <Name>Terminals.Plugins.Vmrc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terminals.Plugins.Vnc\Terminals.Plugins.Vnc.csproj">
-      <Project>{123562C5-8D66-4E30-9676-D47B4C03EE7F}</Project>
-      <Name>Terminals.Plugins.Vnc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Terminals.Plugins.Web\Terminals.Plugins.Web.csproj">
-      <Project>{278face8-1579-4c13-ae59-1b24a7091cfc}</Project>
-      <Name>Terminals.Plugins.Web</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Terminals\Terminals.csproj">
       <Project>{9ECB9FEF-89D1-4144-BAD4-5F3218545B2B}</Project>
       <Name>Terminals</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VncSharp\VncSharp.csproj">
-      <Project>{E0695F0F-0FAF-44BC-AE55-A1FCBFE70271}</Project>
-      <Name>VncSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

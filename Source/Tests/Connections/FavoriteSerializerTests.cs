@@ -5,9 +5,6 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
-using Terminals.Connections.ICA;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
 using Terminals.Data;
 using Terminals.Data.FilePersisted;
 using Terminals.Plugins.Putty;
@@ -54,7 +51,7 @@ namespace Tests.Connections
 
         private static readonly Guid RDP_GUID = new Guid("aea91f1f-c2d8-429d-a2ad-cc915b637881");
 
-        private static readonly Favorite VNC_FAVORITE = ToFavorite(VncConnectionPlugin.VNC, VNC_GUID);
+        private static readonly Favorite VNC_FAVORITE = ToFavorite("VNC", VNC_GUID);
         private static readonly Favorite RDP_FAVORITE = ToFavorite(KnownConnectionConstants.RDP, RDP_GUID);
 
         private static readonly string UNKNOWN_VNC_GUID = String.Format("<guid>{0}</guid>", VNC_ID);
@@ -67,13 +64,8 @@ namespace Tests.Connections
         private static readonly Tuple<string, Type>[] testCases = new Tuple<string, Type>[]
         {
             new Tuple<string, Type>(KnownConnectionConstants.RDP, typeof(RdpOptions)),
-            new Tuple<string, Type>(VncConnectionPlugin.VNC, typeof(VncOptions)),
-            new Tuple<string, Type>(VmrcConnectionPlugin.VMRC, typeof(VMRCOptions)),
             new Tuple<string, Type>(TelnetConnectionPlugin.TELNET, typeof(TelnetOptions)),
-            new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(SshOptions)),
-            new Tuple<string, Type>(KnownConnectionConstants.HTTP, typeof(WebOptions)),
-            new Tuple<string, Type>(KnownConnectionConstants.HTTPS, typeof(WebOptions)),
-            new Tuple<string, Type>(ICAConnectionPlugin.ICA_CITRIX, typeof(ICAOptions))
+            new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(SshOptions))
         };
 
         [TestMethod]
@@ -129,7 +121,7 @@ namespace Tests.Connections
         [TestMethod]
         public void RdpOnlyPlugin_Deserialize_LoadsVncAsUnknown()
         {
-            AssertDeserializedWithRdpOnlyPlugin(VncConnectionPlugin.VNC, true, false);
+            AssertDeserializedWithRdpOnlyPlugin("VNC", true, false);
         }
 
         [TestMethod]

@@ -2,9 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
-using Terminals.Connections.ICA;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
 using Terminals.Data;
 using Terminals.Plugins.Putty;
 
@@ -35,13 +32,8 @@ namespace Tests.Connections
             var testData = new[]
             {
                 new Tuple<string, ProtocolOptions>(KnownConnectionConstants.RDP, new RdpOptions()),
-                new Tuple<string, ProtocolOptions>(VncConnectionPlugin.VNC, new VncOptions()),
-                new Tuple<string, ProtocolOptions>(VmrcConnectionPlugin.VMRC, new VMRCOptions()),
                 new Tuple<string, ProtocolOptions>(TelnetConnectionPlugin.TELNET, new TelnetOptions()),
-                new Tuple<string, ProtocolOptions>(SshConnectionPlugin.SSH, new SshOptions()),
-                new Tuple<string, ProtocolOptions>(KnownConnectionConstants.HTTP, new WebOptions()),
-                new Tuple<string, ProtocolOptions>(KnownConnectionConstants.HTTPS, new WebOptions()),
-                new Tuple<string, ProtocolOptions>(ICAConnectionPlugin.ICA_CITRIX, new ICAOptions())
+                new Tuple<string, ProtocolOptions>(SshConnectionPlugin.SSH, new SshOptions())
             };
 
             var allValid = testData.All(this.AssertTheSameInstance);
@@ -63,13 +55,8 @@ namespace Tests.Connections
             var testData = new[]
             {
                 new Tuple<string, Type>(KnownConnectionConstants.RDP, typeof(RdpOptions)),
-                new Tuple<string, Type>(VncConnectionPlugin.VNC, typeof(VncOptions)),
-                new Tuple<string, Type>(VmrcConnectionPlugin.VMRC, typeof(VMRCOptions)),
                 new Tuple<string, Type>(TelnetConnectionPlugin.TELNET, typeof(TelnetOptions)),
-                new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(SshOptions)),
-                new Tuple<string, Type>(KnownConnectionConstants.HTTP, typeof(WebOptions)),
-                new Tuple<string, Type>(KnownConnectionConstants.HTTPS, typeof(WebOptions)),
-                new Tuple<string, Type>(ICAConnectionPlugin.ICA_CITRIX, typeof(ICAOptions))
+                new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(SshOptions))
             };
 
             var allValid = testData.All(this.AssertOptions);
