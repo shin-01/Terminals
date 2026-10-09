@@ -236,7 +236,7 @@ namespace Tests.Connections
         {
             var mockProvider = new Mock<ICurrenctConnectionProvider>();
             var extensions = this.connectionManager.CreateToolbarExtensions(mockProvider.Object).Count();
-            Assert.AreEqual(3, extensions, "All known extensions have to be registered");
+            Assert.AreEqual(1, extensions, "All known extensions have to be registered");
         }
         
         [TestMethod]
@@ -269,7 +269,7 @@ namespace Tests.Connections
         {
             IEnumerable<Type> optionTypes = this.connectionManager.GetAllKnownProtocolOptionTypes()
                 .Distinct();
-            Assert.AreEqual(3, optionTypes.Count(), "To be able serialize all known protocols we have to list all.");
+            Assert.AreEqual(4, optionTypes.Count(), "To be able serialize all known protocols we have to list all.");
         }
         
         [TestMethod]

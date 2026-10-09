@@ -20,7 +20,7 @@ namespace Tests.FilePersisted
     {
         internal const string UPDATE_ICON_MESSAGE = "Favorite update has to be reported only once during save of favorite.";
 
-        private const string VNCFAVORITE_NAME = "FavoriteVnc";
+        private const string TELNETFAVORITE_NAME = "FavoriteTelnet";
 
         private Guid addedFavoriteId;
         private Guid updatedFavoriteId;
@@ -50,7 +50,7 @@ namespace Tests.FilePersisted
         [TestMethod]
         public void DisabledPlugins_LoadFavorites_ReturnsOnlyAvailableProtocols()
         {
-            this.AddVncRdpFavorites();
+            this.AddTelnetRdpFavorites();
             FilePersistence limitedPersistence = CreateLimitedPersistence();
             bool areRdpOnly = limitedPersistence.Favorites.All(f => f.Protocol == KnownConnectionConstants.RDP);
             Assert.IsTrue(areRdpOnly, "Persistence should filter protocol types, which is not able to handle.");
@@ -59,22 +59,22 @@ namespace Tests.FilePersisted
         [TestMethod]
         public void DisabledPlugins_SaveFavorites_UnknownProtocolsArePreserved()
         {
-            this.AddVncRdpFavorites();
+            this.AddTelnetRdpFavorites();
             FilePersistence limitedPersistence = CreateLimitedPersistence();
             var favorite = limitedPersistence.Favorites.First();
             favorite.Notes = "irrelevant change";
             limitedPersistence.Favorites.Update(favorite);
             var secondary = CreateFilePersistence();
-            bool keepsUnknown = secondary.Favorites.Any(f => f.Protocol == "VNC");
+            bool keepsUnknown = secondary.Favorites.Any(f => f.Protocol == TelnetConnectionPlugin.TELNET);
             Assert.IsTrue(keepsUnknown, "Persistence is not able to serialize unknown protocols.");
         }
 
-        private void AddVncRdpFavorites()
+        private void AddTelnetRdpFavorites()
         {
             this.AddFavorite("FavoriteRDP");
-            var favoriteVnc = this.AddFavorite(VNCFAVORITE_NAME);
-            TestConnectionManager.Instance.ChangeProtocol(favoriteVnc, "VNC");
-            this.Favorites.Update(favoriteVnc);
+            var favoriteTelnet = this.AddFavorite(TELNETFAVORITE_NAME);
+            TestConnectionManager.Instance.ChangeProtocol(favoriteTelnet, TelnetConnectionPlugin.TELNET);
+            this.Favorites.Update(favoriteTelnet);
         }
 
         private static FilePersistence CreateLimitedPersistence()
