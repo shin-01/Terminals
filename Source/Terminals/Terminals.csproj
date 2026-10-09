@@ -67,6 +67,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EntityDeploy Include="Data\DB\SQLPersistence.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>SQLPersistence.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Data\DB\DataBase.cs" />
     <Compile Remove="Data\DB\SQLPersistence1.cs" />
     <Compile Remove="Data\Validation\DbFavoriteMetaData.cs" />
@@ -88,5 +95,12 @@
     </None>
     <None Include="terminalsicon.ico" />
   </ItemGroup>
+
+  <!-- EF5 edmx support: VS ships the targets, the dotnet SDK does not -->
+  <PropertyGroup>
+    <VsEntityTargets>$(MSBuildProgramFiles32)\Microsoft Visual Studio\$(VisualStudioVersion)\Enterprise\MSBuild\Microsoft\VSCurrent\Microsoft.Data.Entity.targets</VsEntityTargets>
+    <VsEntityTargets Condition="!Exists('$(VsEntityTargets)')">$(MSBuildProgramFiles32)\Microsoft Visual Studio\$(VisualStudioVersion)\Enterprise\MSBuild\Microsoft\Microsoft.Data.Entity.targets</VsEntityTargets>
+  </PropertyGroup>
+  <Import Project="$(VsEntityTargets)" Condition="Exists('$(VsEntityTargets)')" />
 
 </Project>
