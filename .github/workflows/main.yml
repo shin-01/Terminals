@@ -59,6 +59,9 @@ jobs:
           Copy-Item "$bin\Terminals.mdf" $diag -Force
           Copy-Item "$bin\Terminals_log.LDF" $diag -Force
           Get-ChildItem $diag | ForEach-Object { $_.IsReadOnly = $false }
+          icacls $diag /grant "$($env:USERNAME):(OI)(CI)F" | Out-Null
+          icacls "$diag\Terminals.mdf" /grant "Everyone:F" | Out-Null
+          icacls "$diag\Terminals_log.LDF" /grant "Everyone:F" | Out-Null
           $mdf = "$diag\Terminals.mdf"
           $ldf = "$diag\Terminals_log.LDF"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_Diag] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
