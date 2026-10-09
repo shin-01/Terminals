@@ -9,7 +9,8 @@
     <Deterministic>false</Deterministic>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>terminalsicon.ico</ApplicationIcon>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
     <OutputPath Condition="'$(Configuration)'=='Debug'">..\..\Build\Output\Debug\</OutputPath>
     <OutputPath Condition="'$(Configuration)'=='Release'">..\..\Build\Output\Release\</OutputPath>
   </PropertyGroup>
