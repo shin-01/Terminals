@@ -5,11 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
 using Terminals.Connections;
-using Terminals.Connections.ICA;
 using Terminals.Connections.Rdp;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
-using Terminals.Connections.Web;
 using Terminals.Data;
 using Tests.Connections;
 using Terminals.Plugins.Putty;
@@ -35,15 +31,10 @@ namespace Tests.UserInterface
             var testData = new[]
             {
                 new Tuple<string, string>(KnownConnectionConstants.RDP, "treeIcon_RDP"),
-                new Tuple<string, string>(VncConnectionPlugin.VNC, "treeIcon_VNC"),
                 new Tuple<string, string>(SshConnectionPlugin.SSH, "treeIcon_SSH"),
                 new Tuple<string, string>(TelnetConnectionPlugin.TELNET, "treeIcon_Telnet"),
-                new Tuple<string, string>(KnownConnectionConstants.HTTP, "treeIcon_HTTP"),
-                new Tuple<string, string>(KnownConnectionConstants.HTTPS, "treeIcon_HTTPS"),
 
                 // undefined icons use default icon
-                new Tuple<string, string>(VmrcConnectionPlugin.VMRC, "treeIcon_VMRC"),
-                new Tuple<string, string>(ICAConnectionPlugin.ICA_CITRIX, "treeIcon_ICA Citrix")     
             };
 
             bool allEquals = testData.All(this.AssertGetTreeviewImageListKey);
@@ -72,15 +63,10 @@ namespace Tests.UserInterface
             var testData = new[]
             {
                 new Tuple<string, Image>(KnownConnectionConstants.RDP, RdpConnectionPlugin.TreeIconRdp),
-                new Tuple<string, Image>(VncConnectionPlugin.VNC, VncConnectionPlugin.TreeIconVnc),
                 new Tuple<string, Image>(SshConnectionPlugin.SSH, SshConnectionPlugin.TreeIconSsh),
                 new Tuple<string, Image>(TelnetConnectionPlugin.TELNET, TelnetConnectionPlugin.TreeIconTelnet),
-                new Tuple<string, Image>(KnownConnectionConstants.HTTP, HttpConnectionPlugin.TreeIconHttp),
-                new Tuple<string, Image>(KnownConnectionConstants.HTTPS, HttpConnectionPlugin.TreeIconHttp),
 
                 // undefined icons use default icon
-                new Tuple<string, Image>(ICAConnectionPlugin.ICA_CITRIX, Connection.Terminalsicon),
-                new Tuple<string, Image>(VmrcConnectionPlugin.VMRC, Connection.Terminalsicon)
             };
 
             bool iconsEquals = testData.All(this.AssertGetFavoriteIcon);

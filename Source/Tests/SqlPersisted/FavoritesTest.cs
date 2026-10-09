@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Connections;
-using Terminals.Connections.VNC;
+using Terminals.Plugins.Putty;
 using Terminals.Data;
 using Terminals.Data.Credentials;
 using Terminals.Data.DB;
@@ -90,20 +90,20 @@ namespace Tests.SqlPersisted
         }
 
         [TestMethod]
-        public void VNCFavorite_Update_SavesPropertiesToDatabaseAndFiresEvents()
+        public void SshFavorite_Update_SavesPropertiesToDatabaseAndFiresEvents()
         {
             IFavorite favorite = this.AddFavoriteToPrimaryPersistence();
-            TestConnectionManager.Instance.ChangeProtocol(favorite, VncConnectionPlugin.VNC);
+            TestConnectionManager.Instance.ChangeProtocol(favorite, SshConnectionPlugin.SSH);
             favorite.Display.Colors = Terminals.Colors.Bits24;
             this.PrimaryFavorites.Update(favorite);
 
             IFavorite target = this.SecondaryFavorites.FirstOrDefault();
-            Assert.IsTrue(target.Protocol == VncConnectionPlugin.VNC, "Protocol wasn't updated");
+            Assert.IsTrue(target.Protocol == SshConnectionPlugin.SSH, "Protocol wasn't updated");
             Assert.IsTrue(target.Display.Colors == Terminals.Colors.Bits24, "Colors property wasn't updated");
 
             // Because of dynamic loading, types compare is not possible.
             var testOptions = target.ProtocolProperties.GetType().FullName;
-            Assert.AreEqual("Terminals.Data.VncOptions", testOptions, "Protocol properties weren't updated");
+            Assert.AreEqual("Terminals.Plugins.Putty.SshOptions", testOptions, "Protocol properties weren't updated");
             Assert.AreEqual(1, this.updatedCount, "Event wasn't delivered");
         }
 
@@ -201,11 +201,11 @@ namespace Tests.SqlPersisted
         }
 
         [TestMethod]
-        public void VNCProtocolToRdp_ChangeProtocol_AllowesUpdatesRdpSecurity()
+        public void SshProtocolToRdp_ChangeProtocol_AllowesUpdatesRdpSecurity()
         {
             IFavorite favorite = this.CreateTestFavorite();
             // now it has RdpOptions
-            TestConnectionManager.Instance.ChangeProtocol(favorite, VncConnectionPlugin.VNC);
+            TestConnectionManager.Instance.ChangeProtocol(favorite, SshConnectionPlugin.SSH);
             this.PrimaryFavorites.Update(favorite);
             FilePersisted.FavoritesTest.AssertRdpSecurity(this.PrimaryPersistence, favorite);
         }
@@ -216,12 +216,12 @@ namespace Tests.SqlPersisted
             this.AddFavoriteToPrimaryPersistence();
             var vncFavorite = this.CreateTestFavorite();
             vncFavorite.Name = "VncFavorite";
-            TestConnectionManager.Instance.ChangeProtocol(vncFavorite,VncConnectionPlugin.VNC);
+            TestConnectionManager.Instance.ChangeProtocol(vncFavorite,"VNC");
             this.PrimaryFavorites.Add(vncFavorite);
 
             ConnectionManager rdpOnlyManager = TestConnectionManager.CreateRdpOnlyManager();
             var rdpOnlyPersistence = CreateSqlPersistence(rdpOnlyManager);
-            bool containsVnc = rdpOnlyPersistence.Favorites.Any(f => f.Protocol == VncConnectionPlugin.VNC);
+            bool containsVnc = rdpOnlyPersistence.Favorites.Any(f => f.Protocol == "VNC");
             Assert.IsFalse(containsVnc, "Even the vnc favorites remain the database, we cant control them without plugin.");
         }
     }

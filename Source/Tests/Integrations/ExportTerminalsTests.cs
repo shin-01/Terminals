@@ -4,9 +4,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals;
 using Terminals.Common.Connections;
-using Terminals.Connections.ICA;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
 using Terminals.Data;
 using Terminals.Integration.Export;
 using Terminals.Integration.Import;
@@ -37,8 +34,6 @@ namespace Tests.Integrations
                 new Tuple<string, string>(KnownConnectionConstants.RDP, "enableSecuritySettings"),
                 new Tuple<string, string>(KnownConnectionConstants.RDP, "tsgwUsageMethod"),
                 new Tuple<string, string>(KnownConnectionConstants.RDP, "executeBeforeConnect"), // applies to all protocols
-                new Tuple<string, string>(VncConnectionPlugin.VNC, "vncAutoScale"),
-                new Tuple<string, string>(VmrcConnectionPlugin.VMRC, "vmrcadministratormode"),
                 new Tuple<string, string>(TelnetConnectionPlugin.TELNET, "telnetSessionName"),
                 new Tuple<string, string>(TelnetConnectionPlugin.TELNET, "telnetVerbose"),
                 new Tuple<string, string>(SshConnectionPlugin.SSH, "sshSessionName"),
@@ -47,8 +42,7 @@ namespace Tests.Integrations
                 new Tuple<string, string>(SshConnectionPlugin.SSH, "sshEnablePagentForwarding"),
                 new Tuple<string, string>(SshConnectionPlugin.SSH, "sshX11Forwarding"),
                 new Tuple<string, string>(SshConnectionPlugin.SSH, "sshEnableCompression"),
-                new Tuple<string, string>(SshConnectionPlugin.SSH, "sshVersion"),
-                new Tuple<string, string>(ICAConnectionPlugin.ICA_CITRIX, "iCAApplicationName")
+                new Tuple<string, string>(SshConnectionPlugin.SSH, "sshVersion")
             };
 
             bool allValid = testData.All(this.AssertExportedFavoriteContent);

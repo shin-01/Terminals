@@ -6,8 +6,8 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
 using Terminals.Connections;
+using Terminals.Plugins.Putty;
 using Terminals.Connections.Rdp;
-using Terminals.Connections.VNC;
 using Terminals.Data;
 using Terminals.Data.Credentials;
 using Tests.Connections;
@@ -134,11 +134,11 @@ namespace Tests.FilePersisted
         /// This is a special case for RdpOptions, which need persistence to handle Gateway credentials
         /// </summary>
         [TestMethod]
-        public void VNCProtocolToRdp_ChangeProtocol_AllowesUpdatesRdpSecurity()
+        public void SshProtocolToRdp_ChangeProtocol_AllowesUpdatesRdpSecurity()
         {
             IFavorite favorite = this.AddFavorite();
             // now it has RdpOptions
-            TestConnectionManager.Instance.ChangeProtocol(favorite, VncConnectionPlugin.VNC);
+            TestConnectionManager.Instance.ChangeProtocol(favorite, SshConnectionPlugin.SSH);
             this.Favorites.Update(favorite);
             AssertRdpSecurity(this.Persistence, favorite);
         }
