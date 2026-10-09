@@ -35,7 +35,6 @@ namespace Terminals.Forms.EditFavorite
 
         internal event EventHandler SetOkButtonRequested;
 
-        private RasControl rasControl;
 
         private bool canValidate;
 
@@ -87,11 +86,7 @@ namespace Terminals.Forms.EditFavorite
             this.securityPanel1.AssignServices(persistence, this.settings);
         }
 
-        internal void AssignRasControl(RasControl rasControl)
-        {
-            this.rasControl = rasControl;
-        }
-
+        
         private void TxtPassword_TextChanged(object sender, EventArgs e)
         {
             this.SetOkButtonState();
@@ -148,9 +143,7 @@ namespace Terminals.Forms.EditFavorite
 
         private void CmbServers_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.rasControl.OnServerNameChanged(this.ProtocolText, this.ServerNameText);
             // Setting the data source resets the already load text, additionaly the RAS control doesnt work
-            // this.cmbServers.DataSource = this.rasControl.ConnectionNames;
         }
 
         private void CmbServers_Leave(object sender, EventArgs e)
