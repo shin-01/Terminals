@@ -10,23 +10,16 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath Condition="'$(Configuration)'=='Debug'">..\..\Build\Output\Debug\</OutputPath>
     <OutputPath Condition="'$(Configuration)'=='Release'">..\..\Build\Output\Release\</OutputPath>
-    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="5.0.0" />
+    <PackageReference Include="FluentValidation" Version="6.2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.6.2.1.0\lib\portable-net40+sl50+wp80+win8+wpa81\FluentValidation.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="AxInterop.MSTSCLib">
       <HintPath>..\..\Resources\Libraries\mstsc\AxInterop.MSTSCLib.dll</HintPath>
     </Reference>
@@ -76,8 +69,10 @@
     <Compile Remove="TerminalServices\WTSApi32.cs" />
     <Compile Remove="Unified\RSS\Weather.cs" />
     <Compile Remove="Updates\RSS\Weather.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="Terminals.log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

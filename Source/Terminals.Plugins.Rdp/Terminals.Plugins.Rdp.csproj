@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Terminals.Plugins.Rdp</AssemblyName>
+    <RootNamespace>Terminals.Plugins.Rdp</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath Condition="'$(Configuration)'=='Debug'">..\..\Build\Output\Debug\Plugins\Rdp\</OutputPath>
+    <OutputPath Condition="'$(Configuration)'=='Release'">..\..\Build\Output\Release\Plugins\Rdp\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="AxInterop.MSTSCLib">
+      <HintPath>..\..\Resources\Libraries\mstsc\AxInterop.MSTSCLib.dll</HintPath>
+    </Reference>
+    <Reference Include="MSTSCLib">
+      <HintPath>..\..\Resources\Libraries\mstsc\MSTSCLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Terminals.Common\Terminals.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
+</Project>
