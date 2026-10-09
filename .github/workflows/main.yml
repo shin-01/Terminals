@@ -38,8 +38,9 @@ jobs:
           Copy-Item "$src\Terminals.mdf" $tmp -Force
           Copy-Item "$src\Terminals_log.LDF" $tmp -Force
           Get-ChildItem $tmp | ForEach-Object { $_.IsReadOnly = $false }
-          attrib -r "$tmp\Terminals.mdf"
-          attrib -r "$tmp\Terminals_log.LDF"
+          icacls $tmp /grant "$($env:USERNAME):(OI)(CI)F" | Out-Null
+          Write-Host "Files in $($tmp):"
+          Get-ChildItem $tmp | Format-Table Name, IsReadOnly, Length
           $mdf = "$tmp\Terminals.mdf"
           $ldf = "$tmp\Terminals_log.LDF"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_TestUpgrade] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
