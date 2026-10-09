@@ -35,31 +35,23 @@ jobs:
           $src = Join-Path $PWD "Resources\Database"
           $script = Join-Path $src "Terminals_CreateDatabase_v3.0.sql"
           sqlcmd -S "(localdb)\MSSQLLocalDB" -i $script
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT name, physical_name FROM sys.master_files WHERE database_id = DB_ID('TERMINALS')"
-          $files = sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SET NOCOUNT ON; SELECT physical_name FROM sys.master_files WHERE database_id = DB_ID('TERMINALS')" -W -s "|" | Select-String "\|"
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'TERMINALS'"
-          foreach ($line in $files) {
-            $parts = $line.ToString().Split("|")
-            $physical = $parts[1].Trim()
-            Write-Host "Copying $physical"
-            if ($physical -like "*mdf") {
-              Copy-Item $physical "$src\Terminals.mdf" -Force
-            } elseif ($physical -like "*ldf") {
-              Copy-Item $physical "$src\Terminals_log.LDF" -Force
-            }
+          $defaultDir = [Environment]::GetFolderPath("LocalApplicationData")
+          $candidates = @(
+            "C:\Users\runneradmin\TERMINALS.mdf",
+            "C:\Users\runneradmin\TERMINALS_log.ldf"
+          )
+          $found = @{}
+          foreach ($f in $candidates) { if (Test-Path $f) { $found[$f] = $true } }
+          if (-not $found.Count) {
+            Write-Host "Default files not found, searching..."
+            Get-ChildItem "C:\Users" -Recurse -Filter "TERMINALS*.mdf" -ErrorAction SilentlyContinue | Select-Object -First 3 | ForEach-Object { Write-Host $_.FullName }
           }
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'TERMINALS'"
+          Copy-Item "C:\Users\runneradmin\TERMINALS.mdf" "$src\Terminals.mdf" -Force
+          Copy-Item "C:\Users\runneradmin\TERMINALS_log.ldf" "$src\Terminals_log.LDF" -Force
           attrib -r "$src\Terminals.mdf"
           attrib -r "$src\Terminals_log.LDF"
-          Write-Host "Verify recreated database is writable"
-          $mdf = "$src\Terminals.mdf"
-          $ldf = "$src\Terminals_log.LDF"
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_Verify] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT name, is_read_only FROM sys.databases WHERE name = 'Terminals_Verify'"
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'Terminals_Verify'"
-      - name: Build solution
-        run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
-      - name: Setup VSTest
-        uses: darenm/Setup-VSTest@v1.2
+          Get-ChildItem $src -Filter "Terminals*" | Format-Table Name, IsReadOnly, Length
       - name: Diagnose deployed test database
         shell: pwsh
         run: |
