@@ -577,8 +577,24 @@ namespace Terminals.Connections
         {
             if (disposing)
             {
-                this.connectionStateDetector.Dispose();
-                this.client.Dispose();
+                try
+                {
+                    this.connectionStateDetector.Dispose();
+                }
+                catch (Exception exc)
+                {
+                    Logging.Error("Error disposing RDP connection state detector", exc);
+                }
+
+                try
+                {
+                    this.client.Dispose();
+                }
+                catch (Exception exc)
+                {
+                    Logging.Error("Error disposing RDP client control", exc);
+                }
+
                 this.client = null;
             }
 
@@ -637,13 +653,28 @@ namespace Terminals.Connections
 
         private void client_OnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
-            if (this.DecideToReconnect(e))
+            // COM events may be raised on a non-UI thread; marshal back to the UI thread
+            if (this.reconecting != null && this.reconecting.InvokeRequired)
             {
-                this.TryReconnect();
+                this.reconecting.BeginInvoke(new Action<IMsTscAxEvents_OnDisconnectedEvent>(this.client_OnDisconnected), new object[] { e });
+                return;
             }
-            else
+
+            try
             {
-                this.ShowDisconnetMessageBox(e);
+                if (this.DecideToReconnect(e))
+                {
+                    this.TryReconnect();
+                }
+                else
+                {
+                    this.ShowDisconnetMessageBox(e);
+                    this.FireDisconnected();
+                }
+            }
+            catch (Exception exc)
+            {
+                Logging.Error("Error handling RDP disconnect event", exc);
                 this.FireDisconnected();
             }
         }

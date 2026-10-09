@@ -205,7 +205,7 @@ namespace Terminals.Connections
             string defaultProtocol = KnownConnectionConstants.RDP;
             var available = this.GetAvailableProtocols();
 
-            if (!available.Contains(defaultProtocol))
+            if (!available.Contains(defaultProtocol) && available.Any())
                 defaultProtocol = available.First();
 
             this.ChangeProtocol(favorite, defaultProtocol);
