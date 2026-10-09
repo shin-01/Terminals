@@ -656,7 +656,7 @@ namespace Terminals.Connections
             // COM events may be raised on a non-UI thread; marshal back to the UI thread
             if (this.reconecting != null && this.reconecting.InvokeRequired)
             {
-                this.reconecting.BeginInvoke(new Action<IMsTscAxEvents_OnDisconnectedEvent>(this.client_OnDisconnected), new object[] { e });
+                this.reconecting.BeginInvoke(new Action(delegate { this.client_OnDisconnected(sender, e); }), null);
                 return;
             }
 
