@@ -29,26 +29,21 @@ jobs:
         uses: NuGet/setup-nuget@v2
       - name: Restore Packages
         run: nuget restore ${{ env.SLN_FILE_PATH }}
-      - name: Upgrade test database to LocalDB 2022 format
+      - name: Recreate test database from creation script
         shell: pwsh
         run: |
           $src = Join-Path $PWD "Resources\Database"
-          $tmp = Join-Path $env:RUNNER_TEMP "dbupgrade"
-          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
-          Copy-Item "$src\Terminals.mdf" $tmp -Force
-          Copy-Item "$src\Terminals_log.LDF" $tmp -Force
-          Get-ChildItem $tmp | ForEach-Object { $_.IsReadOnly = $false }
-          icacls $tmp /grant "$($env:USERNAME):(OI)(CI)F" | Out-Null
-          Write-Host "Files in $($tmp):"
-          Get-ChildItem $tmp | Format-Table Name, IsReadOnly, Length
-          $mdf = "$tmp\Terminals.mdf"
-          $ldf = "$tmp\Terminals_log.LDF"
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_TestUpgrade] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "IF DB_ID('Terminals_TestUpgrade') IS NOT NULL EXEC sp_detach_db 'Terminals_TestUpgrade'"
+          $script = Join-Path $src "Terminals_CreateDatabase_v3.0.sql"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -i $script
+          $mdf = "C:\Users\runneradmin\TERMINALS.mdf"
+          $ldf = "C:\Users\runneradmin\TERMINALS_log.ldf"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "EXEC sp_detach_db 'TERMINALS'"
           Copy-Item $mdf "$src\Terminals.mdf" -Force
           Copy-Item $ldf "$src\Terminals_log.LDF" -Force
           attrib -r "$src\Terminals.mdf"
           attrib -r "$src\Terminals_log.LDF"
+          Write-Host "Recreated database files:"
+          Get-ChildItem $src -Filter "Terminals*" | Format-Table Name, IsReadOnly, Length
       - name: Build solution
         run: msbuild ${{ env.SLN_FILE_PATH }} -t:rebuild -property:Configuration=Release
       - name: Setup VSTest
