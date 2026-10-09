@@ -33,6 +33,15 @@ jobs:
         with:
           install: localdb
           show-log: true
+      - name: Upgrade test database to LocalDB 2022 format
+        shell: pwsh
+        run: |
+          $mdf = Join-Path $PWD "Resources\Database\Terminals.mdf"
+          $ldf = Join-Path $PWD "Resources\Database\Terminals_log.LDF"
+          attrib -r $mdf
+          attrib -r $ldf
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "CREATE DATABASE [Terminals_TestUpgrade] ON (FILENAME = N'$mdf'), (FILENAME = N'$ldf') FOR ATTACH"
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "IF DB_ID('Terminals_TestUpgrade') IS NOT NULL BEGIN ALTER DATABASE [Terminals_TestUpgrade] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [Terminals_TestUpgrade]; END"
       - name: Test
         run: vstest.console.exe /logger:"trx;LogFileName=test_results.trx" Source\Tests\bin\Release\Tests.dll
       - name: Test Report
