@@ -42,7 +42,7 @@
         <File Source="..\..\Resources\Libraries\Flicker\FlickrNet.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="SharpZipLibdll" Guid="97DB6873-E7A3-4010-8EEB-F82D37472275">
-        <File Source="..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="log4netdll" Guid="B2F1F15C-34C3-453E-9521-A8F3949D99C2">
         <File Source="..\packages\log4net.2.0.17\lib\net45\log4net.dll" KeyPath="yes" Checksum="yes"/>
