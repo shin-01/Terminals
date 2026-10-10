@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -190,6 +190,7 @@ namespace Tests.Connections
             Assert.AreEqual(0, controlsCount, MESSAGE);
         }
 
+        [STATestMethod]
         [TestMethod]
         public void KnownProtocols_CreateControls_ReturnsAllControls()
         {
