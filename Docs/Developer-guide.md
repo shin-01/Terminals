@@ -12,14 +12,14 @@ cloning (or a clean), run once:
 
     powershell -ExecutionPolicy Bypass -File Build\Restore.ps1
 
-It installs EntityFramework 5.0.0 (net40 lib) and the MSTest framework
-package into `Source\packages`, then runs `msbuild -t:restore` on the
-solution. Then build:
+It installs EntityFramework 5.0.0 (net40 lib) into `Source\packages`,
+then runs `msbuild -t:restore` on the solution. Then build:
 
     msbuild Source\Terminals.sln -t:rebuild -property:Configuration=Release -restore
 
-In Visual Studio, "Restore NuGet Packages" alone is NOT enough: the two
-HintPath packages must be present under `Source\packages` (script above).
+In Visual Studio, "Restore NuGet Packages" alone is NOT enough: the EF5
+HintPath package must be present under `Source\packages` (script above).
+The test framework is MSTest V2 and restores as a normal PackageReference.
 
 ## How to configure environment
 * Install Visual Studio, With Database tools, Install Wix, Resharper.

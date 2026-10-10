@@ -29,7 +29,6 @@ jobs:
         uses: NuGet/setup-nuget@v2
       - name: Restore Packages
         run: |
-          nuget install Microsoft.VisualStudio.QualityTools.UnitTestFramework.Updated -Version 15.0.26228 -OutputDirectory Source/packages -ExcludeVersion
           nuget install EntityFramework -Version 5.0.0 -OutputDirectory Source/packages -ExcludeVersion
           msbuild ${{ env.SLN_FILE_PATH }} -t:restore -property:Configuration=Release
       - name: Recreate test database from creation script

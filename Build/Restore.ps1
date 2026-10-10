@@ -6,9 +6,11 @@
 #   - EntityFramework 5.0.0 must use the net40 lib (assembly 4.4.0.0); the
 #     PackageReference restore would select the net45 lib (assembly 5.0.0.0)
 #     which is incompatible with the application configuration and edmx.
-#   - Microsoft.VisualStudio.QualityTools.UnitTestFramework.Updated has a
-#     malformed package layout (assembly group instead of a target framework)
-#     and cannot be restored through PackageReference at all (NU1202).
+#   - The test framework is MSTest V2 (MSTest.TestAdapter/TestFramework
+#     2.2.10, plain PackageReference). The legacy
+#     Microsoft.VisualStudio.QualityTools.UnitTestFramework.Updated package
+#     was malformed (assembly group instead of a target framework, NU1202)
+#     and has been dropped.
 #
 # Usage: run once after cloning (or after changing package versions):
 #   powershell -ExecutionPolicy Bypass -File Build\Restore.ps1
@@ -21,9 +23,6 @@ $packagesDir = Join-Path $repoRoot $PackagesDirectory
 $solution = Join-Path $repoRoot "Source\Terminals.sln"
 
 Write-Host "Installing HintPath-based packages into $PackagesDirectory ..."
-nuget install Microsoft.VisualStudio.QualityTools.UnitTestFramework.Updated -Version 15.0.26228 -OutputDirectory $PackagesDirectory -ExcludeVersion
-if ($LASTEXITCODE -ne 0) { throw "nuget install failed for Microsoft.VisualStudio.QualityTools.UnitTestFramework.Updated" }
-
 nuget install EntityFramework -Version 5.0.0 -OutputDirectory $PackagesDirectory -ExcludeVersion
 if ($LASTEXITCODE -ne 0) { throw "nuget install failed for EntityFramework" }
 
