@@ -108,6 +108,24 @@ namespace Tests.Passwords
                 File.Exists(settings.FileLocations.Configuration)
                     ? File.ReadAllText(settings.FileLocations.Configuration).Substring(0, Math.Min(500, (int)new FileInfo(settings.FileLocations.Configuration).Length))
                     : "FILE MISSING");
+            try
+            {
+                var map = new System.Configuration.ExeConfigurationFileMap
+                {
+                    ExeConfigFilename = settings.FileLocations.Configuration
+                };
+                var raw = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(map,
+                    System.Configuration.ConfigurationUserLevel.None);
+                var rawSection = raw.GetSection("settings");
+                this.TestContext.WriteLine("DIAG raw section type={0}, xml={1}",
+                    rawSection == null ? "<null>" : rawSection.GetType().FullName,
+                    rawSection == null ? "<null>" : rawSection.SectionInformation.GetRawXml() ?? "<no raw xml>");
+            }
+            catch (Exception rawExc)
+            {
+                this.TestContext.WriteLine("DIAG raw open failed: {0}", rawExc);
+            }
+
             this.TestContext.WriteLine("DIAG settings state: ConfigVersion={0}, ForceReload again",
                 settings.ConfigVersion == null ? "<null>" : settings.ConfigVersion.ToString());
             settings.ForceReload();
