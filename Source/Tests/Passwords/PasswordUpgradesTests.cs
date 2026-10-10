@@ -104,6 +104,10 @@ namespace Tests.Passwords
 
         private IPersistence RunUpgrade()
         {
+            this.TestContext.WriteLine("DIAG file content: {0}",
+                File.Exists(settings.FileLocations.Configuration)
+                    ? File.ReadAllText(settings.FileLocations.Configuration).Substring(0, Math.Min(500, (int)new FileInfo(settings.FileLocations.Configuration).Length))
+                    : "FILE MISSING");
             this.TestContext.WriteLine("DIAG before upgrade: config={0}, favorites={1}, credentials={2}, hash='{3}'",
                 settings.FileLocations.Configuration, settings.FileLocations.Favorites,
                 settings.FileLocations.Credentials, settings.MasterPasswordHash ?? string.Empty);
