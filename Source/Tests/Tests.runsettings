@@ -5,6 +5,9 @@
     PersistenceSecurity) across test classes; running classes in parallel
     produces cross-test configuration races (password upgrade tests reading
     another test's config). Force serial execution.
+    Many tests host WinForms controls, which requires single thread
+    apartment (STA) threads; MSTest V2 defaults to MTA, unlike the
+    legacy framework.
   -->
   <RunConfiguration>
     <MaxCpuCount>1</MaxCpuCount>
@@ -14,5 +17,6 @@
       <Workers>1</Workers>
       <Scope>ClassLevel</Scope>
     </Parallelize>
+    <Execution ApartmentState="STA" />
   </MSTest>
 </RunSettings>
