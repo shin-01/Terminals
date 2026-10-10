@@ -42,7 +42,7 @@ namespace Tests.Passwords
         [TestMethod]
         public void V2UpgradeEmptyConfigTest()
         {
-            this.UpgradePasswordsTestInitialize(EMPTY_CONFIG_FILE, EMPTY_CREDENTIALS_FILE);
+            this.UpgradePasswordsTestInitialize(EMPTY_CONFIG_FILE, EMPTY_CREDENTIALS_FILE, "favoritesEmpty.xml");
             // simply nothing to upgrade, procedure shouldn't fail.
             this.RunUpgrade();
             Assert.IsFalse(askedForPassword, "Empty config file shouldn't ask for password");
@@ -53,7 +53,7 @@ namespace Tests.Passwords
         [TestMethod]
         public void V2UpgradeNoMasterPasswordConfigTest()
         {
-            this.UpgradePasswordsTestInitialize(NOMASTER_CONFIG_FILE, NOMASTER_CREDENTIALS_FILE);
+            this.UpgradePasswordsTestInitialize(NOMASTER_CONFIG_FILE, NOMASTER_CREDENTIALS_FILE, "favoritesNoMaster.xml");
             // simply nothing to upgrade, procedure shouldn't fail.
             IPersistence persistence = this.RunUpgrade();
             Assert.IsFalse(askedForPassword, "Config file shouldn't ask for password");
