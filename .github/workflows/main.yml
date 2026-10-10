@@ -65,3 +65,26 @@ jobs:
           name: MSTests
           path: TestResults/test_results.trx
           reporter: dotnet-trx 
+
+  poc-rdp-net8:
+    name: PoC RDP on .NET 8 (MsRdpEx)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build PoC
+        run: dotnet build PoC\RdpNet8\RdpNet8.csproj -c Release
+      - name: Smoke test (launch for 10s, expect clean startup)
+        shell: pwsh
+        run: |
+          $proc = Start-Process -FilePath "dotnet" -ArgumentList "PoC\RdpNet8\bin\Release\net8.0-windows\RdpNet8.dll" -PassThru
+          Start-Sleep -Seconds 10
+          if ($proc.HasExited) {
+            Write-Host "PoC exited prematurely with code $($proc.ExitCode)"
+            exit 1
+          }
+          Stop-Process -Id $proc.Id -Force
+          Write-Host "PoC launched and stayed alive for 10s - COM interop initialized"
