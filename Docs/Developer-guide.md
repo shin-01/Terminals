@@ -1,8 +1,25 @@
-# Developer guide
+﻿# Developer guide
 ## Continuous integration
 * There are a private Team City and SonarQube servers configured for our project 
 * As a project developer ask for developer access
 * These builds shouldn't be used as public available development builds (beta or RC)
+
+## Build after the SDK-style project migration
+
+The projects use the SDK-style format with PackageReference, plus two
+HintPath-based packages that a plain restore cannot resolve. After
+cloning (or a clean), run once:
+
+    powershell -ExecutionPolicy Bypass -File Build\Restore.ps1
+
+It installs EntityFramework 5.0.0 (net40 lib) and the MSTest framework
+package into `Source\packages`, then runs `msbuild -t:restore` on the
+solution. Then build:
+
+    msbuild Source\Terminals.sln -t:rebuild -property:Configuration=Release -restore
+
+In Visual Studio, "Restore NuGet Packages" alone is NOT enough: the two
+HintPath packages must be present under `Source\packages` (script above).
 
 ## How to configure environment
 * Install Visual Studio, With Database tools, Install Wix, Resharper.
