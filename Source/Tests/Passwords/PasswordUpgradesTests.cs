@@ -104,11 +104,17 @@ namespace Tests.Passwords
 
         private IPersistence RunUpgrade()
         {
+            this.TestContext.WriteLine("DIAG before upgrade: config={0}, favorites={1}, credentials={2}, hash='{3}'",
+                settings.FileLocations.Configuration, settings.FileLocations.Favorites,
+                settings.FileLocations.Credentials, settings.MasterPasswordHash ?? string.Empty);
             var connectionManager = TestConnectionManager.Instance;
             var persistence = FilePersistedTestLab.CreateNotInitializedFilePersistence(new TestFileWatch(), connectionManager);
             var contentUpgrade = new FilesV2ContentUpgrade(persistence, connectionManager, GetMasterPassword);
             contentUpgrade.Run();
             settings.ForceReload(); // because we changed its file, while upgrading
+            this.TestContext.WriteLine("DIAG after upgrade: hash='{0}', favoritesFileExists={1}",
+                settings.MasterPasswordHash ?? string.Empty,
+                File.Exists(settings.FileLocations.Favorites));
             return persistence;
         }
 
