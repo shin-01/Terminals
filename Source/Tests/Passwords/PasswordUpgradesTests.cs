@@ -79,6 +79,11 @@ namespace Tests.Passwords
         private static void AssertUserAndCredential(IPersistence persistence)
         {
             // we don't have to authenticate, because it was already done by upgrade
+            if (!persistence.Favorites.Any())
+                Assert.Fail("Upgrade produced no favorites: the persistence did not load "
+                    + "the upgraded file, most likely the shared Settings singleton points "
+                    + "to another test's file locations.");
+
             IFavorite favorite = persistence.Favorites.First();
             var guardedSecurity = new GuardedCredential(favorite.Security, persistence.Security);
             Assert.AreEqual(PasswordTests.USERPASSWORD, guardedSecurity.Password, "Upgrade favorite password failed.");
