@@ -20,6 +20,7 @@ namespace Tests.UserInterface
     /// - RAS: not a real protocol, also it doesnt work now
     /// - Http and Https: they dont have any controls.
     /// </summary>
+    [STATestClass]
     [TestClass]
     public class ProtocolOptionsPanelTests
     {

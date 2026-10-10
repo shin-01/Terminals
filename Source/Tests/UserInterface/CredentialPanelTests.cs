@@ -5,6 +5,7 @@ using Terminals.Forms.Controls;
 
 namespace Tests.UserInterface
 {
+    [STATestClass]
     [TestClass]
     public class CredentialPanelTests
     {

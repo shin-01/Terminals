@@ -16,6 +16,7 @@ namespace Tests.UserInterface
     /// <summary>
     /// Setup of roundtrip tests to check, if the favorite is properly loaded and saved by the user control.
     /// </summary>
+    [STATestClass]
     [TestClass]
     public class FavoritePropertiesControlTests : PluginBasedTests
     {
