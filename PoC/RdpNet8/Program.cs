@@ -1,15 +1,15 @@
 // PoC: RDP ActiveX hosting on .NET 8 WinForms via Devolutions.MsRdpEx.
-// Go/no-go validation for the Terminals .NET 8 migration: create, host,
-// connect, receive events and dispose the mstscax ActiveX control.
+// Go/no-go validation for the Terminals .NET 8 migration: the NuGet package
+// ships a legacy AxInterop.MSTSCLib compiled for net8.0-windows, which makes
+// the classic AxHost-based control usable on the modern runtime.
 //
-// Modelled after MsRdpEx_App/MainDlg.cs (Devolutions upstream sample).
+// MsRdpExComInterop=Legacy is the package default; the build targets add
+// Interop.MSTSCLib + AxInterop.MSTSCLib references automatically.
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using MSTSCLib;
-using MsRdpEx;
 using AxMSTSCLib;
 
 namespace RdpNet8
@@ -31,13 +31,14 @@ namespace RdpNet8
         private readonly TextBox userBox = new TextBox();
         private readonly TextBox passwordBox = new TextBox();
         private readonly Button connectButton = new Button();
-        private readonly Button closeButton = new Button();
         private readonly StatusStrip statusStrip = new StatusStrip();
         private readonly ToolStripStatusLabel statusLabel = new ToolStripStatusLabel();
 
+        private AxMsRdpClient9NotSafeForScripting rdp;
+
         public MainForm(string[] args)
         {
-            Text = "RDP on .NET 8 - PoC (MsRdpEx)";
+            Text = "RDP on .NET 8 - PoC (MsRdpEx legacy interop)";
             ClientSize = new Size(1024, 768);
 
             serverBox.Text = args.Length > 0 ? args[0] : "localhost";
@@ -52,11 +53,7 @@ namespace RdpNet8
             connectButton.Dock = DockStyle.Top;
             connectButton.Click += OnConnect;
 
-            closeButton.Text = "Close";
-            closeButton.Dock = DockStyle.Top;
-            closeButton.Click += (s, e) => Close();
-
-            statusLabel.Text = "Ready - net8.0-windows + Devolutions.MsRdpEx";
+            statusLabel.Text = "Ready - net8.0-windows + MsRdpEx legacy AxInterop";
             statusStrip.Items.Add(statusLabel);
             statusStrip.Dock = DockStyle.Bottom;
 
@@ -64,29 +61,23 @@ namespace RdpNet8
             Controls.Add(userBox);
             Controls.Add(passwordBox);
             Controls.Add(connectButton);
-            Controls.Add(closeButton);
             Controls.Add(statusStrip);
         }
 
         private void OnConnect(object sender, EventArgs e)
         {
-            MsRdpExManager manager = MsRdpExManager.Instance;
-            RdpCoreApi coreApi = manager.CoreApi;
-            bool axHookEnabled = manager.AxHookEnabled;
-            string rdpExDll = coreApi.MsRdpExDllPath;
-
-            RdpView rdpView;
-
-            if (axHookEnabled)
+            if (rdp != null)
             {
-                rdpView = new RdpView("mstscax", rdpExDll);
-            }
-            else
-            {
-                rdpView = new RdpView("mstscax", null);
+                // single session per PoC run: replace the control
+                rdp.Dispose();
+                rdp = null;
             }
 
-            AxMsRdpClient9NotSafeForScripting rdp = rdpView.rdpClient;
+            rdp = new AxMsRdpClient9NotSafeForScripting();
+            ((System.ComponentModel.ISupportInitialize)rdp).BeginInit();
+            Controls.Add(rdp);
+            rdp.Dock = DockStyle.Fill;
+            ((System.ComponentModel.ISupportInitialize)rdp).EndInit();
 
             rdp.Server = serverBox.Text;
             rdp.UserName = userBox.Text;
@@ -97,17 +88,24 @@ namespace RdpNet8
             IMsTscNonScriptable secured = (IMsTscNonScriptable)rdp.GetOcx();
             secured.ClearTextPassword = passwordBox.Text;
 
-            rdp.DesktopWidth = rdpView.ClientSize.Width;
-            rdp.DesktopHeight = rdpView.ClientSize.Height;
+            rdp.DesktopWidth = ClientSize.Width;
+            rdp.DesktopHeight = ClientSize.Height - statusStrip.Height;
 
             rdp.OnConnected += (s, ev) =>
                 BeginInvoke((Action)(() => statusLabel.Text = "Connected"));
             rdp.OnDisconnected += (s, ev) =>
-                BeginInvoke((Action)(() => statusLabel.Text = string.Format("Disconnected (reason {0})", ev.discReason)));
+                BeginInvoke((Action)(() => statusLabel.Text =
+                    string.Format("Disconnected (reason {0})", ((IMsTscAxEvents_OnDisconnectedEvent)ev).discReason)));
 
-            rdpView.Text = string.Format("{0} - Terminals PoC", rdp.Server);
-            rdp.Connect();
-            rdpView.Show(this);
+            try
+            {
+                rdp.Connect();
+                statusLabel.Text = "Connecting...";
+            }
+            catch (Exception ex)
+            {
+                statusLabel.Text = "Connect failed: " + ex.Message;
+            }
         }
     }
 }

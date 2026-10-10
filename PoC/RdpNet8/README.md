@@ -12,9 +12,11 @@ ufficiale `MsRdpEx_App`.
 - `Devolutions.MsRdpEx` 2026.10.6 (NuGet, zero dipendenze, target
   net8.0-windows **e** net48 — la stessa libreria potrà essere usata
   anche prima della migrazione, su net48)
-- `RdpView` + `AxMsRdpClient9NotSafeForScripting`: gli stessi tipi
-  concettuali usati oggi da `Terminals.Plugins.Rdp`
-  (`AxMsRdpClient6NotSafeForScripting`), senza AxHost WinForms
+- `AxMSTSCLib.AxMsRdpClient9NotSafeForScripting`: il pacchetto
+  include una AxInterop.MSTSCLib **legacy compilata per
+  net8.0-windows** (via build targets, `MsRdpExComInterop=Legacy`),
+  quindi il controllo AxHost classico funziona anche su .NET 8 —
+  lo stesso modello di `Terminals.Plugins.Rdp`, senza riscritture
 
 ## Cosa validare (checklist)
 
