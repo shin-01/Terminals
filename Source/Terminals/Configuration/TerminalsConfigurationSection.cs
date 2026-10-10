@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Configuration;
 using Terminals.Security;
 
@@ -348,76 +348,9 @@ namespace Terminals
             }
         }
 
-        [ConfigurationProperty("useAmazon")]
-        public bool UseAmazon
-        {
-            get
-            {
-                return (bool)this["useAmazon"];
-            }
-            set
-            {
-                this["useAmazon"] = value;
-            }
-        }
-
-        [ConfigurationProperty("encryptedAmazonAccessKey", IsRequired = false)]
-        public string EncryptedAmazonAccessKey
-        {
-            get
-            {
-                return (string)this["encryptedAmazonAccessKey"];
-            }
-            set
-            {
-                this["encryptedAmazonAccessKey"] = value;
-            }
-        }
-
-        [ConfigurationProperty("encryptedAmazonSecretKey", IsRequired = false)]
-        public string EncryptedAmazonSecretKey
-        {
-            get
-            {
-                return (string)this["encryptedAmazonSecretKey"];
-            }
-            set
-            {
-                this["encryptedAmazonSecretKey"] = value;
-            }
-        }
-
-        [ConfigurationProperty("AmazonBucketName", IsRequired = false)]
-        public string AmazonBucketName
-        {
-            get
-            {
-                return (string)this["AmazonBucketName"];
-            }
-            set
-            {
-                this["AmazonBucketName"] = value;
-            }
-        }
         #endregion
 
-        #region Flickr section
-
-        [ConfigurationProperty("flickrToken", DefaultValue = "")]
-        public string FlickrToken
-        {
-            get
-            {
-                return Convert.ToString(this["flickrToken"]);
-            }
-            set
-            {
-                this["flickrToken"] = value;
-            }
-        }
-
-        #endregion
-
+        
         #region Proxy section
 
         [ConfigurationProperty("useProxy")]
@@ -1039,6 +972,52 @@ namespace Terminals
             {
                 this["databaseMasterPassword"] = value;
             }
+        }
+
+        #endregion
+
+        #region Deprecated Amazon/Flickr attributes
+
+        // The Amazon S3 and Flickr screenshot upload features were removed,
+        // but old configuration files (including the shipped test data) still
+        // contain these attributes. They must stay declared here, otherwise
+        // System.Configuration refuses to load the whole settings section
+        // (Unrecognized attribute) and the application would recover the
+        // configuration from the default template, losing all user settings.
+
+        [ConfigurationProperty("useAmazon", DefaultValue = "false")]
+        public bool UseAmazon
+        {
+            get { return (bool)this["useAmazon"]; }
+            set { this["useAmazon"] = value; }
+        }
+
+        [ConfigurationProperty("encryptedAmazonAccessKey", IsRequired = false)]
+        public string EncryptedAmazonAccessKey
+        {
+            get { return (string)this["encryptedAmazonAccessKey"]; }
+            set { this["encryptedAmazonAccessKey"] = value; }
+        }
+
+        [ConfigurationProperty("encryptedAmazonSecretKey", IsRequired = false)]
+        public string EncryptedAmazonSecretKey
+        {
+            get { return (string)this["encryptedAmazonSecretKey"]; }
+            set { this["encryptedAmazonSecretKey"] = value; }
+        }
+
+        [ConfigurationProperty("AmazonBucketName", IsRequired = false)]
+        public string AmazonBucketName
+        {
+            get { return (string)this["AmazonBucketName"]; }
+            set { this["AmazonBucketName"] = value; }
+        }
+
+        [ConfigurationProperty("flickrToken", DefaultValue = "")]
+        public string FlickrToken
+        {
+            get { return Convert.ToString(this["flickrToken"]); }
+            set { this["flickrToken"] = value; }
         }
 
         #endregion

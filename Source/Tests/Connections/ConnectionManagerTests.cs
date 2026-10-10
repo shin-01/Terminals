@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -6,10 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Terminals.Common.Connections;
 using Terminals.Connections;
-using Terminals.Connections.ICA;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
-using Terminals.Connections.Web;
+using Terminals.Connections.Rdp;
 using Terminals.Data;
 using Terminals.Integration.Export;
 using Tests.Helpers;
@@ -40,7 +37,7 @@ namespace Tests.Connections
         public void GetAvailableProtocols_ReturnsAll()
         {
             int knownProtocols = GetUniqueProtocols().Count();
-            Assert.AreEqual(8, knownProtocols, "All other test in this SUT operate on wrong data.");
+            Assert.AreEqual(3, knownProtocols, "All other test in this SUT operate on wrong data.");
         }
 
         [TestMethod]
@@ -49,14 +46,8 @@ namespace Tests.Connections
             var testData = new[]
             {
                 new Tuple<string, Type>(KnownConnectionConstants.RDP, typeof(RDPConnection)),
-                new Tuple<string, Type>(VncConnectionPlugin.VNC, typeof(VNCConnection)),
-                // VMRCConnection creation may fail in some test runners.
-                //new Tuple<string, Type>(VmrcConnectionPlugin.VMRC, typeof(VMRCConnection)),
                 new Tuple<string, Type>(TelnetConnectionPlugin.TELNET, typeof(PuttyConnection)),
-                new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(PuttyConnection)),
-                new Tuple<string, Type>(KnownConnectionConstants.HTTP, typeof(HTTPConnection)),
-                new Tuple<string, Type>(KnownConnectionConstants.HTTPS, typeof(HTTPConnection)),
-                new Tuple<string, Type>(ICAConnectionPlugin.ICA_CITRIX, typeof(ICAConnection))
+                new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(PuttyConnection))
             };
 
             var allValid = testData.All(this.AssertCreatedConnection);
@@ -102,13 +93,8 @@ namespace Tests.Connections
             var testData = new[]
             {
                 new Tuple<string, int>(KnownConnectionConstants.RDP, KnownConnectionConstants.RDPPort),
-                new Tuple<string, int>(VncConnectionPlugin.VNC, VncConnectionPlugin.VncPort),
-                new Tuple<string, int>(VmrcConnectionPlugin.VMRC, VmrcConnectionPlugin.VMRCPort),
                 new Tuple<string, int>(TelnetConnectionPlugin.TELNET, TelnetConnectionPlugin.TelnetPort),
-                new Tuple<string, int>(SshConnectionPlugin.SSH, SshConnectionPlugin.SSHPort),
-                new Tuple<string, int>(KnownConnectionConstants.HTTP, KnownConnectionConstants.HTTPPort),
-                new Tuple<string, int>(KnownConnectionConstants.HTTPS, HttpsConnectionPlugin.HTTPSPort),
-                new Tuple<string, int>(ICAConnectionPlugin.ICA_CITRIX, ICAConnectionPlugin.ICAPort)
+                new Tuple<string, int>(SshConnectionPlugin.SSH, SshConnectionPlugin.SSHPort)
             };
 
             var allValid = testData.All(this.AssertResolvedPort);
@@ -138,14 +124,8 @@ namespace Tests.Connections
             var testData = new[]
             {
                 new Tuple<int, string>(KnownConnectionConstants.RDPPort, KnownConnectionConstants.RDP),
-                new Tuple<int, string>(VncConnectionPlugin.VncPort, VncConnectionPlugin.VNC),
-                // imposible to distinquish vnc and vmrc, if both operate on the same port.
-                // new Tuple<int, string>(VmrcConnectionPlugin.VMRCPort, VmrcConnectionPlugin.VMRC),
                 new Tuple<int, string>(TelnetConnectionPlugin.TelnetPort, TelnetConnectionPlugin.TELNET),
-                new Tuple<int, string>(SshConnectionPlugin.SSHPort, SshConnectionPlugin.SSH),
-                new Tuple<int, string>(KnownConnectionConstants.HTTPPort, KnownConnectionConstants.HTTP),
-                new Tuple<int, string>(HttpsConnectionPlugin.HTTPSPort, KnownConnectionConstants.HTTPS),
-                new Tuple<int, string>(ICAConnectionPlugin.ICAPort, ICAConnectionPlugin.ICA_CITRIX)
+                new Tuple<int, string>(SshConnectionPlugin.SSHPort, SshConnectionPlugin.SSH)
             };
 
             var allValid = testData.All(this.AssertPortName);
@@ -172,22 +152,12 @@ namespace Tests.Connections
             var nonHttpPorts = new[]
             {
                 KnownConnectionConstants.RDP,
-                VncConnectionPlugin.VNC,
                 SshConnectionPlugin.SSH,
-                TelnetConnectionPlugin.TELNET,
-                VmrcConnectionPlugin.VMRC
+                TelnetConnectionPlugin.TELNET
             };
             
             bool nonHttp = nonHttpPorts.All(connectionManager.IsProtocolWebBased);
             Assert.IsFalse(nonHttp, "Only Http based protocols are known web based.");
-        }
-        
-        [TestMethod]
-        public void HttpBasedProtocols_IsPortWebbased_ReturnTrue()
-        {
-            var nonHttpPorts = new[] { KnownConnectionConstants.HTTP, KnownConnectionConstants.HTTPS };
-            bool nonHttp = nonHttpPorts.All(connectionManager.IsProtocolWebBased);
-            Assert.IsTrue(nonHttp, "Only Http based protocols are known web based.");
         }
         
         [TestMethod]
@@ -204,7 +174,7 @@ namespace Tests.Connections
                 .All(connectionManager.IsKnownProtocol);
             Assert.IsTrue(allKnownAreKnown, "GetAvailable protocols should match all of them as known.");
         }
-
+        
         [TestMethod]
         public void UknownProtocol_IsKnownProtocol_ReturnFalse()
         {
@@ -221,16 +191,6 @@ namespace Tests.Connections
         }
 
         [TestMethod]
-        public void WebProtocols_CreateControls_ReturnsEmpty()
-        {
-            int httpControls = connectionManager.CreateControls(KnownConnectionConstants.HTTP).Length;
-            int httpsControls = connectionManager.CreateControls(KnownConnectionConstants.HTTPS).Length;
-            const string MESSAGE = "Web based protocols have no configuration.";
-            bool bothEmpty = httpControls == 0 && httpsControls == 0;
-            Assert.IsTrue(bothEmpty, MESSAGE);
-        }
-
-        [TestMethod]
         public void KnownProtocols_CreateControls_ReturnsAllControls()
         {
             Tuple<string, int, string>[] testData = CreateControlsTestData();
@@ -243,11 +203,8 @@ namespace Tests.Connections
         {
             return new []{
                 new Tuple<string, int, string>(KnownConnectionConstants.RDP, 5, "Terminals.Forms.EditFavorite.RdpDisplayControl"),
-                new Tuple<string, int, string>(VncConnectionPlugin.VNC, 1, "Terminals.Forms.EditFavorite.VncControl"),
-                new Tuple<string, int, string>(VmrcConnectionPlugin.VMRC, 1, "Terminals.Forms.EditFavorite.VmrcControl"),
                 new Tuple<string, int, string>(TelnetConnectionPlugin.TELNET, 1, "Terminals.Plugins.Putty.PuttyOptionsControl"),
-                new Tuple<string, int, string>(SshConnectionPlugin.SSH, 1, "Terminals.Plugins.Putty.SshOptionsControl"),
-                new Tuple<string, int, string>(ICAConnectionPlugin.ICA_CITRIX, 1, "Terminals.Forms.EditFavorite.CitrixControl")
+                new Tuple<string, int, string>(SshConnectionPlugin.SSH, 1, "Terminals.Plugins.Putty.SshOptionsControl")
             };
         }
 
@@ -279,14 +236,14 @@ namespace Tests.Connections
         {
             var mockProvider = new Mock<ICurrenctConnectionProvider>();
             var extensions = this.connectionManager.CreateToolbarExtensions(mockProvider.Object).Count();
-            Assert.AreEqual(3, extensions, "All known extensions have to be registered");
+            Assert.AreEqual(1, extensions, "All known extensions have to be registered");
         }
         
         [TestMethod]
         public void GetSupportedPorts_ReturnsAllNonWeb()
         {
             var resolved = connectionManager.SupportedPorts();
-            var expected = new ushort[] { 22, 23, 1494, 3389, 5900 };
+            var expected = new ushort[] { 22, 23, 3389 };
             Assert.AreEqual(expected.Length, resolved.Length, "We want to scan each unique port only once ignoring default web ports.");
             bool allResolved = resolved.All(port => expected.Contains(port));
             Assert.IsTrue(allResolved, "Port numbers have to obtained from plugins.");
@@ -298,11 +255,8 @@ namespace Tests.Connections
             string[] expected = new[]
             {
                 "Terminals.Integration.Export.TerminalsRdpExport",
-                "Terminals.Integration.Export.TerminalsVncExport",
-                "Terminals.Integration.Export.TerminalsIcaExport",
                 "Terminals.Plugins.Putty.TerminalsSshExport",
-                "Terminals.Plugins.Putty.TerminalsTelnetExport",
-                "Terminals.Integration.Export.TerminalsVmrcExport"
+                "Terminals.Plugins.Putty.TerminalsTelnetExport"
             };
 
             ITerminalsOptionsExport[] exporters = this.connectionManager.GetTerminalsOptionsExporters();
@@ -315,7 +269,7 @@ namespace Tests.Connections
         {
             IEnumerable<Type> optionTypes = this.connectionManager.GetAllKnownProtocolOptionTypes()
                 .Distinct();
-            Assert.AreEqual(8, optionTypes.Count(), "To be able serialize all known protocols we have to list all.");
+            Assert.AreEqual(4, optionTypes.Count(), "To be able serialize all known protocols we have to list all.");
         }
         
         [TestMethod]
@@ -333,16 +287,10 @@ namespace Tests.Connections
             {
                 new Tuple<int, IEnumerable<string>>(KnownConnectionConstants.RDPPort, 
                     new List<string>() { "Terminals.Connections.Rdp.RdpConnectionPlugin"}),
-                new Tuple<int, IEnumerable<string>>(VncConnectionPlugin.VncPort,
-                    new List<string>() { "Terminals.Connections.VNC.VncConnectionPlugin", "Terminals.Connections.VMRC.VmrcConnectionPlugin"}),
                 new Tuple<int, IEnumerable<string>>(TelnetConnectionPlugin.TelnetPort, 
                     new List<string>() { "Terminals.Plugins.Putty.TelnetConnectionPlugin"}),
                 new Tuple<int, IEnumerable<string>>(SshConnectionPlugin.SSHPort, 
                     new List<string>() { "Terminals.Plugins.Putty.SshConnectionPlugin"}),
-                new Tuple<int, IEnumerable<string>>(KnownConnectionConstants.HTTPPort, 
-                    new List<string>() { "Terminals.Connections.Web.HttpConnectionPlugin"}),
-                new Tuple<int, IEnumerable<string>>(HttpsConnectionPlugin.HTTPSPort, 
-                    new List<string>() { "Terminals.Connections.Web.HttpsConnectionPlugin"}),
             };
 
             bool allPortsResolved = testCases.All(this.AssertAllPortPluginsResolved);
@@ -401,11 +349,11 @@ namespace Tests.Connections
         }
 
         [TestMethod]
-        public void VncOnlyPlugin_SetDefaultProtocol_SetsVnc()
+        public void PuttyOnlyPlugin_SetDefaultProtocol_SetsTelnet()
         {
-            var vncOnlyPlugin = new List<IConnectionPlugin>() { new VncConnectionPlugin() };
-            ConnectionManager connectionManager = TestConnectionManager.CreateConnectionManager(vncOnlyPlugin);
-            AssertSetDefaultProtocol(connectionManager, VncConnectionPlugin.VNC, typeof(VncOptions));
+            var puttyOnlyPlugin = new List<IConnectionPlugin>() { new TelnetConnectionPlugin() };
+            ConnectionManager connectionManager = TestConnectionManager.CreateConnectionManager(puttyOnlyPlugin);
+            AssertSetDefaultProtocol(connectionManager, TelnetConnectionPlugin.TELNET, typeof(TelnetOptions));
         }
 
         private static void AssertSetDefaultProtocol(ConnectionManager connectionManager,

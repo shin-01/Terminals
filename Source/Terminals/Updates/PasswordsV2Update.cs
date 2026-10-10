@@ -160,10 +160,7 @@ namespace Terminals.Updates
 
         private void UpdateSettingsElement(XElement settingsElement)
         {
-            this.MigratePasswordAttribute(settingsElement, "encryptedDefaultPassword");
-            this.MigratePasswordAttribute(settingsElement, "encryptedAmazonAccessKey");
-            this.MigratePasswordAttribute(settingsElement, "encryptedAmazonSecretKey");
-            this.MigrateNotEncryptedAttribute(settingsElement, "defaultDomain");
+            this.MigratePasswordAttribute(settingsElement, "encryptedDefaultPassword");            this.MigrateNotEncryptedAttribute(settingsElement, "defaultDomain");
             this.MigrateNotEncryptedAttribute(settingsElement, "defaultUsername");
         }
 

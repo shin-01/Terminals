@@ -208,7 +208,9 @@ namespace Tests.Integrations
 
         private static int ExpectedFavoritesCount(List<FavoriteConfigurationElement> toImport)
         {
-            return toImport.Select(favorite => favorite.Name)
+            string[] knownProtocols = TestConnectionManager.Instance.GetAvailableProtocols();
+            return toImport.Where(favorite => knownProtocols.Contains(favorite.Protocol))
+                           .Select(favorite => favorite.Name)
                            .Distinct(StringComparer.CurrentCultureIgnoreCase)
                            .Count();
         }

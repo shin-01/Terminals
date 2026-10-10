@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,6 +38,11 @@ namespace Terminals.Security
         /// </summary>
         private const int IV_LENGTH = PasswordFunctions.IV_LENGTH;
 
+        /// <summary>
+        /// Rfc2898DeriveBytes rejects shorter salts; used to detect degraded stored keys.
+        /// </summary>
+        private const int MINIMAL_SALT_LENGTH = 8;
+
         private static readonly RandomNumberGenerator saltGenerator = RandomNumberGenerator.Create();
 
         /// <summary>
@@ -56,6 +61,12 @@ namespace Terminals.Security
             // empty password check
             if (string.IsNullOrEmpty(password) && validationParts.Item1.Length == 0)
                 return true;
+
+            // degraded configuration (e.g. recreated from the default template) may
+            // provide a stored key too short to derive a validation key from; that is
+            // an invalid stored master password, not a reason to crash
+            if (validationParts.Item1.Length < MINIMAL_SALT_LENGTH)
+                return false;
 
             byte[] validationKey = CalculateMasterPasswordKey(password, validationParts.Item1);
             return validationKey.SequenceEqual(validationParts.Item2);

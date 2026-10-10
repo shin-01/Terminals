@@ -4,9 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Terminals.Common.Connections;
 using Terminals.Connections;
-using Terminals.Connections.ICA;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
 using Terminals.Data;
 using Terminals.Data.Credentials;
 using Terminals.Forms;
@@ -113,32 +110,8 @@ namespace Tests.UserInterface
 
 
 
-        [TestMethod]
-        public void Vnc_LoadSave_KeepsDisplayNumber()
-        {
-            this.AssertExpectedPropertyValue<VncOptions, int>(VncConnectionPlugin.VNC,
-                  (options, newValue) => options.DisplayNumber = newValue,
-                  options => options.DisplayNumber,
-                  EXPECTED_NUMBER);
-        }
 
-        [TestMethod]
-        public void Vmrc_LoadSave_KeepsReducedColorsMode()
-        {
-            this.AssertExpectedPropertyValue<VMRCOptions, bool>(VmrcConnectionPlugin.VMRC,
-                  (options, newValue) => options.ReducedColorsMode = newValue,
-                  options => options.ReducedColorsMode,
-                  true);
-        }
 
-        [TestMethod]
-        public void Ica_LoadSave_KeepsReducedApplicationName()
-        {
-            this.AssertExpectedPropertyValue<ICAOptions, string>(ICAConnectionPlugin.ICA_CITRIX,
-                  (options, newValue) => options.ApplicationName = newValue,
-                  options => options.ApplicationName,
-                  "ApplicationName");
-        }
 
         private void AssertExpectedPropertyValue<TOptions, TExpectedValue>(string protocol,
             Action<TOptions, TExpectedValue> setter, 
@@ -189,11 +162,6 @@ namespace Tests.UserInterface
             this.AssertLoadedControlsImplementInterface(KnownConnectionConstants.RDP);
         }
 
-        [TestMethod]
-        public void Vnc_ReloadControls_ImplementIProtocolOptionsControl()
-        {
-            this.AssertLoadedControlsImplementInterface(VncConnectionPlugin.VNC);
-        }
 
         [TestMethod]
         public void SSh_ReloadControls_ImplementIProtocolOptionsControl()
@@ -207,17 +175,7 @@ namespace Tests.UserInterface
             this.AssertLoadedControlsImplementInterface(TelnetConnectionPlugin.TELNET);
         }
 
-        [TestMethod]
-        public void Vmrc_ReloadControls_ImplementIProtocolOptionsControl()
-        {
-            this.AssertLoadedControlsImplementInterface(VmrcConnectionPlugin.VMRC);
-        }
 
-        [TestMethod]
-        public void Ica_ReloadControls_ImplementIProtocolOptionsControl()
-        {
-            this.AssertLoadedControlsImplementInterface(ICAConnectionPlugin.ICA_CITRIX);
-        }
 
         private void AssertLoadedControlsImplementInterface(string protocol)
         {

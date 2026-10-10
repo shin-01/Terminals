@@ -1,10 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Terminals.Connections;
-using Terminals.Connections.VMRC;
-using Terminals.Connections.VNC;
 using Terminals.Network;
 
 namespace Tests.Network
@@ -13,6 +11,8 @@ namespace Tests.Network
     public class ServiceDetectorTests
     {
         private const string IRRELEVANT_IP_ADDRESS = "IrrelevantIp";
+
+        private const int IRRELEVANT_PORT = 1234;
 
         [TestMethod]
         public void UnknownPlugin_ResolveServiceName_ReturnsRdp()
@@ -24,23 +24,38 @@ namespace Tests.Network
         }
 
         [TestMethod]
-        public void WrokingVncVmrcPlugins_ResolveServiceName_ReturnsVnc()
+        public void WorkingExtraDetectionPlugin_ResolveServiceName_ReturnsExtraDetection()
         {
-            IConnectionPlugin vnc = new VncConnectionPlugin((ip, port) => {});
-            var resolved = Resolve(vnc.Port, new VmrcConnectionPlugin(), vnc);
-            Assert.AreEqual(vnc.PortName, resolved, "If extra check is successfull, than that plugins is resolved.");
+            var standardPlugin = CreatePlugin("Standard");
+            var extraDetectionPlugin = CreateExtraDetectionPlugin("ExtraDetected", valid: true);
+            var resolved = Resolve(IRRELEVANT_PORT, standardPlugin, extraDetectionPlugin);
+            Assert.AreEqual("ExtraDetected", resolved, "If extra check is successfull, than that plugins is resolved.");
         }
-        
+
         [TestMethod]
-        public void VmrcFailingVncPlugin_ResolveServiceName_ReturnsVmrc()
+        public void FailingExtraDetectionPlugin_ResolveServiceName_ReturnsStandard()
         {
-            IConnectionPlugin vnc = new VncConnectionPlugin((ip, port) =>
-            {
-                throw new Exception();
-            });
-            var vmrc = new VmrcConnectionPlugin();
-            var resolved = Resolve(vnc.Port, vmrc, vnc);
-            Assert.AreEqual(vmrc.PortName, resolved, "If extra check fails standard plugin is resolved.");
+            var standardPlugin = CreatePlugin("Standard");
+            var extraDetectionPlugin = CreateExtraDetectionPlugin("ExtraDetected", valid: false);
+            var resolved = Resolve(IRRELEVANT_PORT, standardPlugin, extraDetectionPlugin);
+            Assert.AreEqual("Standard", resolved, "If extra check fails standard plugin is resolved.");
+        }
+
+        private static IConnectionPlugin CreatePlugin(string portName)
+        {
+            var plugin = new Mock<IConnectionPlugin>();
+            plugin.SetupGet(p => p.PortName).Returns(portName);
+            return plugin.Object;
+        }
+
+        private static IConnectionPlugin CreateExtraDetectionPlugin(string portName, bool valid)
+        {
+            var plugin = new Mock<IConnectionPlugin>();
+            plugin.SetupGet(p => p.PortName).Returns(portName);
+            plugin.As<IExtraDetection>()
+                .Setup(d => d.IsValid(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns(valid);
+            return plugin.Object;
         }
 
         private static string Resolve(int port, params IConnectionPlugin[] plugins)

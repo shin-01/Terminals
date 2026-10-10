@@ -6,8 +6,8 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
 using Terminals.Connections;
+using Terminals.Plugins.Putty;
 using Terminals.Connections.Rdp;
-using Terminals.Connections.VNC;
 using Terminals.Data;
 using Terminals.Data.Credentials;
 using Tests.Connections;
@@ -20,7 +20,7 @@ namespace Tests.FilePersisted
     {
         internal const string UPDATE_ICON_MESSAGE = "Favorite update has to be reported only once during save of favorite.";
 
-        private const string VNCFAVORITE_NAME = "FavoriteVnc";
+        private const string TELNETFAVORITE_NAME = "FavoriteTelnet";
 
         private Guid addedFavoriteId;
         private Guid updatedFavoriteId;
@@ -50,7 +50,7 @@ namespace Tests.FilePersisted
         [TestMethod]
         public void DisabledPlugins_LoadFavorites_ReturnsOnlyAvailableProtocols()
         {
-            this.AddVncRdpFavorites();
+            this.AddTelnetRdpFavorites();
             FilePersistence limitedPersistence = CreateLimitedPersistence();
             bool areRdpOnly = limitedPersistence.Favorites.All(f => f.Protocol == KnownConnectionConstants.RDP);
             Assert.IsTrue(areRdpOnly, "Persistence should filter protocol types, which is not able to handle.");
@@ -59,22 +59,22 @@ namespace Tests.FilePersisted
         [TestMethod]
         public void DisabledPlugins_SaveFavorites_UnknownProtocolsArePreserved()
         {
-            this.AddVncRdpFavorites();
+            this.AddTelnetRdpFavorites();
             FilePersistence limitedPersistence = CreateLimitedPersistence();
             var favorite = limitedPersistence.Favorites.First();
             favorite.Notes = "irrelevant change";
             limitedPersistence.Favorites.Update(favorite);
             var secondary = CreateFilePersistence();
-            bool keepsUnknown = secondary.Favorites.Any(f => f.Protocol == "VNC");
+            bool keepsUnknown = secondary.Favorites.Any(f => f.Protocol == TelnetConnectionPlugin.TELNET);
             Assert.IsTrue(keepsUnknown, "Persistence is not able to serialize unknown protocols.");
         }
 
-        private void AddVncRdpFavorites()
+        private void AddTelnetRdpFavorites()
         {
             this.AddFavorite("FavoriteRDP");
-            var favoriteVnc = this.AddFavorite(VNCFAVORITE_NAME);
-            TestConnectionManager.Instance.ChangeProtocol(favoriteVnc, "VNC");
-            this.Favorites.Update(favoriteVnc);
+            var favoriteTelnet = this.AddFavorite(TELNETFAVORITE_NAME);
+            TestConnectionManager.Instance.ChangeProtocol(favoriteTelnet, TelnetConnectionPlugin.TELNET);
+            this.Favorites.Update(favoriteTelnet);
         }
 
         private static FilePersistence CreateLimitedPersistence()
@@ -134,11 +134,11 @@ namespace Tests.FilePersisted
         /// This is a special case for RdpOptions, which need persistence to handle Gateway credentials
         /// </summary>
         [TestMethod]
-        public void VNCProtocolToRdp_ChangeProtocol_AllowesUpdatesRdpSecurity()
+        public void SshProtocolToRdp_ChangeProtocol_AllowesUpdatesRdpSecurity()
         {
             IFavorite favorite = this.AddFavorite();
             // now it has RdpOptions
-            TestConnectionManager.Instance.ChangeProtocol(favorite, VncConnectionPlugin.VNC);
+            TestConnectionManager.Instance.ChangeProtocol(favorite, SshConnectionPlugin.SSH);
             this.Favorites.Update(favorite);
             AssertRdpSecurity(this.Persistence, favorite);
         }
