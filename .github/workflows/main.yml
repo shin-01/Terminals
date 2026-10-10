@@ -59,6 +59,7 @@ jobs:
       - name: Test
         run: vstest.console.exe Source\Tests\bin\Release\net48\Tests.dll /settings:Source\Tests\Tests.runsettings /logger:"trx;LogFileName=test_results.trx"
       - name: Diagnose - password upgrade tests only
+        if: always()
         shell: pwsh
         run: |
           vstest.console.exe Source\Tests\bin\Release\net48\Tests.dll /settings:Source\Tests\Tests.runsettings /TestCaseFilter:"FullyQualifiedName~PasswordUpgradesTests" /logger:"trx;LogFileName=diag_password.trx"
