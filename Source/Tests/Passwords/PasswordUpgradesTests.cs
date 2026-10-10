@@ -104,45 +104,11 @@ namespace Tests.Passwords
 
         private IPersistence RunUpgrade()
         {
-            this.TestContext.WriteLine("DIAG file content: {0}",
-                File.Exists(settings.FileLocations.Configuration)
-                    ? File.ReadAllText(settings.FileLocations.Configuration).Substring(0, Math.Min(500, (int)new FileInfo(settings.FileLocations.Configuration).Length))
-                    : "FILE MISSING");
-            try
-            {
-                var map = new System.Configuration.ExeConfigurationFileMap
-                {
-                    ExeConfigFilename = settings.FileLocations.Configuration
-                };
-                var raw = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(map,
-                    System.Configuration.ConfigurationUserLevel.None);
-                var rawSection = raw.GetSection("settings");
-                this.TestContext.WriteLine("DIAG raw section type={0}, xml={1}",
-                    rawSection == null ? "<null>" : rawSection.GetType().FullName,
-                    rawSection == null ? "<null>" : rawSection.SectionInformation.GetRawXml() ?? "<no raw xml>");
-            }
-            catch (Exception rawExc)
-            {
-                this.TestContext.WriteLine("DIAG raw open failed: {0}", rawExc);
-            }
-
-            this.TestContext.WriteLine("DIAG settings state: ConfigVersion={0}, ForceReload again",
-                settings.ConfigVersion == null ? "<null>" : settings.ConfigVersion.ToString());
-            settings.ForceReload();
-            this.TestContext.WriteLine("DIAG after second reload: ConfigVersion={0}, hash='{1}'",
-                settings.ConfigVersion == null ? "<null>" : settings.ConfigVersion.ToString(),
-                settings.MasterPasswordHash ?? string.Empty);
-            this.TestContext.WriteLine("DIAG before upgrade: config={0}, favorites={1}, credentials={2}, hash='{3}'",
-                settings.FileLocations.Configuration, settings.FileLocations.Favorites,
-                settings.FileLocations.Credentials, settings.MasterPasswordHash ?? string.Empty);
             var connectionManager = TestConnectionManager.Instance;
             var persistence = FilePersistedTestLab.CreateNotInitializedFilePersistence(new TestFileWatch(), connectionManager);
             var contentUpgrade = new FilesV2ContentUpgrade(persistence, connectionManager, GetMasterPassword);
             contentUpgrade.Run();
             settings.ForceReload(); // because we changed its file, while upgrading
-            this.TestContext.WriteLine("DIAG after upgrade: hash='{0}', favoritesFileExists={1}",
-                settings.MasterPasswordHash ?? string.Empty,
-                File.Exists(settings.FileLocations.Favorites));
             return persistence;
         }
 
