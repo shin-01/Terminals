@@ -56,7 +56,12 @@ jobs:
           icacls "D:\a\Terminals\Terminals" /grant "Everyone:(OI)(CI)F" /T | Out-Null
           Write-Host "ACL granted on workspace"
       - name: Test
-        run: dotnet test Source\Tests\Tests.csproj -c Release --no-build --settings Source\Tests\Tests.runsettings --logger "trx;LogFileName=test_results.trx" --results-directory TestResults
+        run: |
+          dotnet test Source\Tests\Tests.csproj -c Release --no-build --settings Source\Tests\Tests.runsettings --logger "trx;LogFileName=test_results.trx" --results-directory TestResults --verbosity normal
+          Write-Host "TRX files in TestResults:"
+          Get-ChildItem -Recurse TestResults -Filter *.trx -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+          Write-Host "TRX files anywhere in Source:"
+          Get-ChildItem -Recurse Source -Filter *.trx -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
       - name: Test Report
         uses: dorny/test-reporter@v1.6.0
         if: success() || failure()    # run this step even if previous step failed
