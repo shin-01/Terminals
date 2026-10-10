@@ -6,17 +6,16 @@
     produces cross-test configuration races (password upgrade tests reading
     another test's config). Force serial execution.
     Many tests host WinForms controls, which requires single thread
-    apartment (STA) threads; MSTest V2 defaults to MTA, unlike the
-    legacy framework.
+    apartment (STA) threads; the test platform defaults to MTA.
   -->
   <RunConfiguration>
     <MaxCpuCount>1</MaxCpuCount>
+    <ExecutionThreadApartmentState>STA</ExecutionThreadApartmentState>
   </RunConfiguration>
   <MSTest>
     <Parallelize>
       <Workers>1</Workers>
       <Scope>ClassLevel</Scope>
     </Parallelize>
-    <Execution ApartmentState="STA" />
   </MSTest>
 </RunSettings>
