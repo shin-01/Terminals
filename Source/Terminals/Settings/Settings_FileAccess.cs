@@ -162,9 +162,23 @@ namespace Terminals.Configuration
 
         private System.Configuration.Configuration GetConfiguration()
         {
+            CreateConfigFileIfNotExist();
+
+            // opening may fail transiently, when another thread in the same process
+            // is currently saving the file (e.g. concurrent unit tests); retry once
+            // before destroying the file with a default template, which silently
+            // drops all user settings including the master password key
             try
             {
-                CreateConfigFileIfNotExist();
+                return OpenConfiguration();
+            }
+            catch (Exception firstExc)
+            {
+                Logging.Info("First attempt to open configuration failed, retrying once.", firstExc);
+            }
+
+            try
+            {
                 return OpenConfiguration();
             }
             catch (Exception exc) // try to recover the file
