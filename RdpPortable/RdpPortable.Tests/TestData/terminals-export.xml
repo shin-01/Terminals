@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<favorites>
+  <favorite>
+    <userName>administrator</userName>
+    <password>secret123</password>
+    <authMethod>AuthMethodTerminalServices</authMethod>
+    <colors>Bits32</colors>
+    <connectToConsole>true</connectToConsole>
+    <desktopSize>x1024</desktopSize>
+    <domainName>CORP</domainName>
+    <enableNLAAuthentication>true</enableNLAAuthentication>
+    <enableTLSAuthentication>true</enableTLSAuthentication>
+    <redirectClipboard>true</redirectClipboard>
+    <redirectPrinters>true</redirectPrinters>
+    <redirectedDrives>true</redirectedDrives>
+    <sounds>PlayOnServer</sounds>
+    <name>Server Prod</name>
+    <port>3389</port>
+    <protocol>RDP</protocol>
+    <serverName>prod01.corp.local</serverName>
+    <tags>produzione,client</tags>
+    <tsgwUsageMethod>1</tsgwUsageMethod>
+    <tsgwCredsSource>2</tsgwCredsSource>
+    <tsgwHostname>gw.corp.local</tsgwHostname>
+    <tsgwSeparateLogin>true</tsgwSeparateLogin>
+    <tsgwUsername>gwuser</tsgwUsername>
+    <tsgwPassword>gwpass</tsgwPassword>
+    <disableWallPaper>true</disableWallPaper>
+    <enableFontSmoothing>true</enableFontSmoothing>
+    <notes>Server di produzione</notes>
+  </favorite>
+  <favorite>
+    <name>Web Server</name>
+    <protocol>HTTP</protocol>
+    <serverName>web01.local</serverName>
+    <port>80</port>
+  </favorite>
+  <favorite>
+    <name>Second RDP</name>
+    <protocol>RDP</protocol>
+    <serverName>vm-test.local</serverName>
+    <port>3390</port>
+    <desktopSize>FitToWindow</desktopSize>
+    <colors>Bit16</colors>
+    <sounds>DontPlay</sounds>
+  </favorite>
+</favorites>

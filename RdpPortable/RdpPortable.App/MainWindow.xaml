@@ -1,0 +1,55 @@
+<Window x:Class="RdpPortable.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:RdpPortable.Core.Models;assembly=RdpPortable.Core"
+        Title="RDP Portable" Height="640" Width="920">
+    <Grid Margin="6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Margin="0,0,6,0">
+            <Grid DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="SearchBox" Grid.Column="0" TextChanged="SearchBox_TextChanged"
+                         ToolTip="Cerca connessione"/>
+                <Button Grid.Column="1" Content="Nuova" Click="OnNew"/>
+                <Button Grid.Column="2" Content="Importa" Click="OnImport" ToolTip="Importa export XML del vecchio Terminals"/>
+                <Button Grid.Column="3" Content="Export .rdp" Click="OnExportRdp"/>
+            </Grid>
+            <ListBox x:Name="ConnectionList" Margin="0,4,0,0"
+                     MouseDoubleClick="OnConnectDoubleClick"
+                     SelectionChanged="OnSelectionChanged"
+                     KeyDown="OnListKeyDown">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Server}" Foreground="Gray" FontSize="11"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0">
+                <Button x:Name="ConnectButton" Content="Connetti" Click="OnConnect" IsEnabled="False"/>
+                <Button Content="Modifica" Click="OnEdit" IsEnabled="{Binding IsEnabled, ElementName=ConnectButton}"/>
+                <Button Content="Elimina" Click="OnDelete" IsEnabled="{Binding IsEnabled, ElementName=ConnectButton}"/>
+                <Button Content="Disconnetti" Click="OnDisconnect"/>
+            </WrapPanel>
+            <WindowsFormsHost x:Name="RdpHost" Grid.Row="1" Margin="0,4,0,0" Background="Black"/>
+        </Grid>
+    </Grid>
+</Window>
