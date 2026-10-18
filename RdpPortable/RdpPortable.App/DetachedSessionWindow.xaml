@@ -1,0 +1,14 @@
+<Window x:Class="RdpPortable.App.DetachedSessionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sessione RDP" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="Black">
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top" Margin="2" Background="#EEEEEE">
+            <Button Content="Riaggancia" Click="OnReattach" ToolTip="Riporta la sessione nella finestra principale"/>
+            <Button Content="Full screen" Click="OnFullScreen" ToolTip="Attiva/disattiva full screen (doppio click sulla finestra)"/>
+        </WrapPanel>
+        <Grid x:Name="HostRoot"/>
+    </DockPanel>
+</Window>

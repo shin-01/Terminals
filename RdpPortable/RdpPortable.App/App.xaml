@@ -1,0 +1,20 @@
+<Application x:Class="RdpPortable.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+    <Application.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="72"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+    </Application.Resources>
+</Application>

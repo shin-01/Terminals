@@ -1,0 +1,109 @@
+<Window x:Class="RdpPortable.App.ConnectionEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Modifica connessione" Height="620" Width="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Grid.Row="0" Header="Generale" Padding="4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Nome:"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="NameBox"/>
+                <Label Grid.Row="1" Content="Server:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="ServerBox"/>
+                <Label Grid.Row="2" Content="Porta:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="PortBox"/>
+                <Label Grid.Row="3" Content="Utente:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="UserNameBox"/>
+                <Label Grid.Row="4" Content="Dominio:"/>
+                <TextBox Grid.Row="4" Grid.Column="1" x:Name="DomainBox"/>
+                <Label Grid.Row="5" Content="Password:"/>
+                <PasswordBox Grid.Row="5" Grid.Column="1" x:Name="PasswordBox"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1" Header="Schermo" Padding="4" Margin="0,4,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Dimensione:"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="DesktopSizeBox" SelectedIndex="0"/>
+                <Label Grid.Row="1" Content="Larghezza:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="WidthBox"/>
+                <Label Grid.Row="2" Content="Altezza:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="HeightBox"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Header="Avanzate" Padding="4" Margin="0,4,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Colori:"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ColorDepthBox" SelectedIndex="3"/>
+                <Label Grid.Row="1" Content="Audio:"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="SoundsBox" SelectedIndex="0"/>
+                <Label Grid.Row="2" Content="Gateway RD:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="GatewayBox"/>
+                <Label Grid.Row="3" Content="Programma:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="StartProgramBox"/>
+            </Grid>
+        </GroupBox>
+
+        <WrapPanel Grid.Row="3" Margin="0,6,0,0">
+            <CheckBox x:Name="ConsoleCheckBox" Content="Console" Margin="4"/>
+            <CheckBox x:Name="ConnectionBarCheckBox" Content="Barra connessione" Margin="4" IsChecked="True"/>
+            <CheckBox x:Name="ClipboardCheckBox" Content="Clipboard" Margin="4" IsChecked="True"/>
+            <CheckBox x:Name="DrivesCheckBox" Content="Dischi" Margin="4"/>
+            <CheckBox x:Name="PrintersCheckBox" Content="Stampanti" Margin="4"/>
+            <CheckBox x:Name="SmartCardsCheckBox" Content="SmartCard" Margin="4"/>
+            <CheckBox x:Name="PortsCheckBox" Content="Porte" Margin="4"/>
+            <CheckBox x:Name="NlaCheckBox" Content="NLA" Margin="4" IsChecked="True"/>
+        </WrapPanel>
+
+        <Label Grid.Row="4" Content="Note:"/>
+        <TextBox Grid.Row="4" x:Name="NotesBox" Height="60" TextWrapping="Wrap" AcceptsReturn="True"
+                 VerticalScrollBarVisibility="Auto" Margin="60,0,2,2"/>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Salva" Click="OnSave" MinWidth="80" IsDefault="True"/>
+            <Button Content="Annulla" Click="OnCancel" MinWidth="80" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

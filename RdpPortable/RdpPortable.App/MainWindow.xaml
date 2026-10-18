@@ -1,0 +1,74 @@
+<Window x:Class="RdpPortable.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RDP Portable" Height="680" Width="1100">
+    <Grid Margin="6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Margin="0,0,6,0">
+            <Grid DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="SearchBox" Grid.Column="0" TextChanged="SearchBox_TextChanged"
+                         ToolTip="Cerca connessione"/>
+                <Button Grid.Column="1" Content="Nuova" Click="OnNew"/>
+                <Button Grid.Column="2" Content="Importa" Click="OnImport" ToolTip="Importa export XML del vecchio Terminals"/>
+            </Grid>
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Export .rdp" Click="OnExportRdp"/>
+                <Button Grid.Column="1" Content="Modifica" Click="OnEdit" x:Name="EditButton"/>
+            </Grid>
+            <ListBox x:Name="ConnectionList" Margin="0,4,0,4"
+                     MouseDoubleClick="OnConnectDoubleClick"
+                     SelectionChanged="OnSelectionChanged"
+                     KeyDown="OnListKeyDown">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Server}" Foreground="Gray" FontSize="11"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <WrapPanel Grid.Row="0" Margin="0,0,0,4">
+                <Button x:Name="ConnectButton" Content="Connetti" Click="OnConnect" IsEnabled="False"
+                        ToolTip="Apre una nuova scheda RDP (max 4 sessioni)"/>
+                <Button x:Name="DetachButton" Content="Detach" Click="OnDetach" IsEnabled="False"
+                        ToolTip="Sposta la sessione attiva in finestra autonoma"/>
+                <Button x:Name="FullscreenButton" Content="Full screen" Click="OnFullScreen" IsEnabled="False"
+                        ToolTip="Full screen della sessione attiva (o doppio click sul titolo della scheda)"/>
+                <Label Content="Layout:" VerticalAlignment="Center" Margin="6,0,2,0"/>
+                <ComboBox x:Name="LayoutBox" Width="150" SelectionChanged="OnLayoutChanged">
+                    <ComboBoxItem Content="Schede" Tag="Tabs" IsSelected="True"/>
+                    <ComboBoxItem Content="Affiancate (4)" Tag="Horizontal"/>
+                    <ComboBoxItem Content="Impilate (4)" Tag="Vertical"/>
+                    <ComboBoxItem Content="Griglia 2x2" Tag="Grid"/>
+                </ComboBox>
+                <Label x:Name="SessionsCounter" Content="0/4 sessioni" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </WrapPanel>
+
+            <TabControl x:Name="SessionsTabs" Grid.Row="1" Background="#222222"/>
+
+            <UniformGrid x:Name="TilesPanel" Grid.Row="1" Visibility="Collapsed"/>
+        </Grid>
+    </Grid>
+</Window>
