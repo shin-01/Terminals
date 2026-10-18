@@ -4,6 +4,17 @@ Applicazione ex-novo ispirata a Terminals, dedicata esclusivamente al protocollo
 
 Costruita con **WPF (.NET 8)** e il controllo client **MSTSC ActiveX** (`mstscax.dll`) embedded nella finestra — lo stesso motore usato dal vecchio Terminals, con supporto completo a: RD Gateway (TS Gateway), redirect (clipboard, dischi, stampanti, porte, smart card, dispositivi), NLA/CredSSP, color depth, dimensioni desktop, performance flags, programmi di avvio.
 
+## Multisessione (max 4)
+
+Fino a **4 sessioni RDP simultanee**, ognuna con il proprio controllo MSTSC embedded. Layout disponibili dal selettore in alto:
+
+- **Schede** — classico multitab, una sessione per scheda, chiusura con il pulsante ✕ sull'intestazione;
+- **Affiancate (4)** — fino a 4 finestre affiancate orizzontalmente;
+- **Impilate (4)** — fino a 4 finestre impilate verticalmente;
+- **Griglia 2x2** — 4 finestre in griglia.
+
+Il layout è commutabile a caldo: le sessioni aperte vengono riorganizzate senza disconnetterle. Il contatore `n/4 sessioni` mostra lo stato; oltre il limite l'apertura viene bloccata con un avviso.
+
 ## Struttura
 
 ```
@@ -15,9 +26,11 @@ RdpPortable/
 │   ├── Import/TerminalsXmlImporter.cs   # import export XML del vecchio Terminals
 │   └── Export/RdpFileExporter.cs        # generazione file .rdp (mstsc.exe)
 ├── RdpPortable.App/             # net8.0-windows - UI WPF
-│   ├── MainWindow.xaml(.cs)     # lista connessioni + host RDP embedded
+│   ├── MainWindow.xaml(.cs)     # lista connessioni + gestore sessioni/layout
 │   ├── ConnectionEditorWindow   # editor completo connessione
 │   ├── RdpClientHost.cs         # wrapper MSTSC ActiveX (gateway, redirect, NLA)
+│   ├── RdpSession.cs            # singola sessione aperta (host + contenitori)
+│   ├── SessionManager.cs        # multitab + layout affiancati/impilati/griglia (max 4)
 │   └── ViewModels/
 └── RdpPortable.Tests/           # xunit (importer, store, exporter)
 ```

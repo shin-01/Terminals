@@ -1,10 +1,8 @@
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using RdpPortable.Core.Models;
 using RdpPortable.App.ViewModels;
@@ -14,32 +12,36 @@ namespace RdpPortable.App
     public partial class MainWindow : Window
     {
         private readonly MainViewModel viewModel;
-        private readonly RdpClientHost clientHost = new RdpClientHost();
+        private readonly SessionManager sessionManager;
 
         public MainWindow(MainViewModel viewModel)
         {
             this.viewModel = viewModel;
             InitializeComponent();
+
+            this.sessionManager = new SessionManager(this.SessionsTabs, this.TilesPanel);
+            this.sessionManager.StatusMessage += _ => this.UpdateSessionCount();
+
             this.ConnectionList.ItemsSource = this.viewModel.Connections;
             this.ConnectionList.Items.SortDescriptions.Add(
                 new SortDescription(nameof(RdpConnection.Name), ListSortDirection.Ascending));
             this.ConnectionList.Items.IsLiveSorting = true;
 
-            this.clientHost.Initialize();
-            this.RdpHost.Child = this.clientHost.Control;
-            this.clientHost.Disconnected += msg => Dispatcher.Invoke(() => this.StatusBarItem());
-        }
-
-        private void StatusBarItem()
-        {
-            this.ConnectButton.IsEnabled = this.ConnectionList.SelectedItem is RdpConnection;
+            this.UpdateSessionCount();
         }
 
         private RdpConnection? Selected => this.ConnectionList.SelectedItem as RdpConnection;
 
+        private void UpdateSessionCount()
+        {
+            this.SessionsCounter.Content = this.sessionManager.Sessions.Count + "/" + SessionManager.MaxSessions + " sessioni";
+            this.ConnectButton.IsEnabled = this.sessionManager.CanConnect && this.Selected != null;
+            this.EditButton.IsEnabled = this.Selected != null;
+        }
+
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.StatusBarItem();
+            this.UpdateSessionCount();
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -75,9 +77,18 @@ namespace RdpPortable.App
             if (connection == null)
                 return;
 
+            if (!this.sessionManager.CanConnect)
+            {
+                MessageBox.Show(this,
+                    "Massimo " + SessionManager.MaxSessions + " sessioni simultanee. Chiudere una scheda prima di aprirne altre.",
+                    "RDP Portable", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                this.clientHost.Connect(connection);
+                this.sessionManager.Open(connection);
+                this.UpdateSessionCount();
             }
             catch (Exception ex)
             {
@@ -86,9 +97,19 @@ namespace RdpPortable.App
             }
         }
 
-        private void OnDisconnect(object sender, RoutedEventArgs e)
+        private void OnLayoutChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.clientHost.Disconnect();
+            if (this.sessionManager == null)
+                return;
+
+            if ((e.AddedItems.Cast<ComboBoxItem>().FirstOrDefault()?.Tag as string) is string tag)
+                this.sessionManager.SetLayout(tag switch
+                {
+                    "Horizontal" => SessionLayout.Horizontal,
+                    "Vertical" => SessionLayout.Vertical,
+                    "Grid" => SessionLayout.Grid,
+                    _ => SessionLayout.Tabs,
+                });
         }
 
         private void OnNew(object sender, RoutedEventArgs e)
@@ -167,6 +188,11 @@ namespace RdpPortable.App
 
         private void OnDelete(object sender, RoutedEventArgs e)
         {
+            this.DeleteSelected();
+        }
+
+        private void DeleteSelected()
+        {
             var connection = this.Selected;
             if (connection == null)
                 return;
@@ -181,7 +207,7 @@ namespace RdpPortable.App
         private void OnListKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
-                this.OnDelete(sender, e);
+                this.DeleteSelected();
         }
 
         private void OnImport(object sender, RoutedEventArgs e)
@@ -243,7 +269,7 @@ namespace RdpPortable.App
 
         protected override void OnClosed(EventArgs e)
         {
-            this.clientHost.Dispose();
+            this.sessionManager.Dispose();
             base.OnClosed(e);
         }
     }
