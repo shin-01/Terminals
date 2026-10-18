@@ -135,6 +135,21 @@ namespace RdpPortable.App
                 this.client.Disconnect();
         }
 
+        public void ToggleFullscreen()
+        {
+            if (this.client == null)
+                return;
+
+            try
+            {
+                this.client.FullScreen = !this.client.FullScreen;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Toggle fullscreen failed: " + ex.Message);
+            }
+        }
+
         private static System.Drawing.Size ResolveSize(RdpConnection c)
         {
             if (c.DesktopSize == DesktopSizeMode.FitToWindow || c.DesktopSize == DesktopSizeMode.AutoScale)

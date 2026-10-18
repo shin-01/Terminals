@@ -24,6 +24,10 @@ namespace RdpPortable.App
 
         public System.Windows.Forms.Integration.WindowsFormsHost? HostElement { get; set; }
 
+        public DetachedSessionWindow? DetachedWindow { get; set; }
+
+        public bool Reattaching { get; set; }
+
         public string Title
         {
             get

@@ -100,11 +100,56 @@ namespace RdpPortable.App
                 return;
 
             this.sessions.Remove(session);
+
+            if (session.DetachedWindow != null)
+            {
+                session.Reattaching = false;
+                session.DetachedWindow.Close();
+                session.DetachedWindow = null;
+            }
+
             this.RebuildContainers();
             session.Dispose();
 
             if (this.sessions.Count > 0)
                 this.tabs.SelectedIndex = Math.Min(index, this.sessions.Count - 1);
+        }
+
+        public void Detach(RdpSession session)
+        {
+            if (session.DetachedWindow != null)
+            {
+                session.DetachedWindow.Activate();
+                return;
+            }
+
+            this.RebuildContainersWithout(session);
+
+            session.Reattaching = false;
+            var window = new DetachedSessionWindow(this, session);
+            session.DetachedWindow = window;
+            window.Show();
+        }
+
+        public void Reattach(RdpSession session)
+        {
+            var window = session.DetachedWindow;
+            if (window == null)
+                return;
+
+            session.Reattaching = true;
+            window.Close();
+            session.DetachedWindow = null;
+            session.Reattaching = false;
+
+            this.RebuildContainers();
+            if (this.Layout == SessionLayout.Tabs)
+                this.tabs.SelectedItem = session.Tab;
+        }
+
+        public void ToggleFullscreen(RdpSession session)
+        {
+            session.Host.ToggleFullscreen();
         }
 
         public void CloseAll()
@@ -115,11 +160,23 @@ namespace RdpPortable.App
 
         private void RebuildContainers()
         {
+            this.RebuildContainersWithout(null);
+        }
+
+        private void RebuildContainersWithout(RdpSession? excluded)
+        {
             this.tabs.Items.Clear();
             this.tiles.Children.Clear();
 
             foreach (var session in this.sessions)
             {
+                if (session == excluded)
+                {
+                    session.Tab = null;
+                    session.Tile = null;
+                    continue;
+                }
+
                 session.Tab = null;
                 session.Tile = null;
 
@@ -147,18 +204,37 @@ namespace RdpPortable.App
 
         private void CreateTab(RdpSession session)
         {
+            var detach = new Button
+            {
+                Content = "⇱",
+                Width = 20,
+                Height = 18,
+                Padding = new Thickness(0),
+                Margin = new Thickness(6, 0, 0, 0),
+                FontSize = 10,
+                ToolTip = "Detach: sessione in finestra autonoma",
+            };
+            detach.Click += (s, e) => this.Detach(session);
             var close = new Button
             {
                 Content = "✕",
                 Width = 20,
                 Height = 18,
                 Padding = new Thickness(0),
-                Margin = new Thickness(6, 0, 0, 0),
+                Margin = new Thickness(3, 0, 0, 0),
                 FontSize = 10,
+                ToolTip = "Chiudi sessione",
             };
             close.Click += (s, e) => this.Close(session);
             var header = new StackPanel { Orientation = Orientation.Horizontal };
-            header.Children.Add(new TextBlock { Text = session.Title, VerticalAlignment = VerticalAlignment.Center });
+            var titleBlock = new TextBlock { Text = session.Title, VerticalAlignment = VerticalAlignment.Center };
+            titleBlock.MouseLeftButtonDown += (s, e) =>
+            {
+                if (e.ClickCount == 2)
+                    this.ToggleFullscreen(session);
+            };
+            header.Children.Add(titleBlock);
+            header.Children.Add(detach);
             header.Children.Add(close);
 
             session.Tab = new TabItem { Header = header, Content = EnsureHost(session) };
@@ -169,10 +245,14 @@ namespace RdpPortable.App
         {
             var close = new Button { Content = "✕", Width = 20, Height = 18, Padding = new Thickness(0), FontSize = 10 };
             close.Click += (s, e) => this.Close(session);
-            var title = new TextBlock { Text = session.Title, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 0, 0) };
+            var detach = new Button { Content = "⇱", Width = 20, Height = 18, Padding = new Thickness(0), FontSize = 10, ToolTip = "Detach: sessione in finestra autonoma" };
+            detach.Click += (s, e) => this.Detach(session);
+            var title = new TextBlock { Text = session.Title, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 4, 0) };
             var header = new DockPanel { LastChildFill = true };
             DockPanel.SetDock(close, Dock.Right);
+            DockPanel.SetDock(detach, Dock.Right);
             header.Children.Add(close);
+            header.Children.Add(detach);
             header.Children.Add(title);
 
             var tile = new DockPanel { Background = System.Windows.Media.Brushes.Black };

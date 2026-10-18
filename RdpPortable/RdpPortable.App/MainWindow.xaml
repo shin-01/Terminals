@@ -52,6 +52,10 @@
             <WrapPanel Grid.Row="0" Margin="0,0,0,4">
                 <Button x:Name="ConnectButton" Content="Connetti" Click="OnConnect" IsEnabled="False"
                         ToolTip="Apre una nuova scheda RDP (max 4 sessioni)"/>
+                <Button x:Name="DetachButton" Content="Detach" Click="OnDetach" IsEnabled="False"
+                        ToolTip="Sposta la sessione attiva in finestra autonoma"/>
+                <Button x:Name="FullscreenButton" Content="Full screen" Click="OnFullScreen" IsEnabled="False"
+                        ToolTip="Full screen della sessione attiva (o doppio click sul titolo della scheda)"/>
                 <Label Content="Layout:" VerticalAlignment="Center" Margin="6,0,2,0"/>
                 <ComboBox x:Name="LayoutBox" Width="150" SelectionChanged="OnLayoutChanged">
                     <ComboBoxItem Content="Schede" Tag="Tabs" IsSelected="True"/>

@@ -21,6 +21,7 @@ namespace RdpPortable.App
 
             this.sessionManager = new SessionManager(this.SessionsTabs, this.TilesPanel);
             this.sessionManager.StatusMessage += _ => this.UpdateSessionCount();
+            this.sessionManager.Sessions.CollectionChanged += (_, _) => this.UpdateSessionCount();
 
             this.ConnectionList.ItemsSource = this.viewModel.Connections;
             this.ConnectionList.Items.SortDescriptions.Add(
@@ -34,9 +35,12 @@ namespace RdpPortable.App
 
         private void UpdateSessionCount()
         {
-            this.SessionsCounter.Content = this.sessionManager.Sessions.Count + "/" + SessionManager.MaxSessions + " sessioni";
+            int count = this.sessionManager.Sessions.Count;
+            this.SessionsCounter.Content = count + "/" + SessionManager.MaxSessions + " sessioni";
             this.ConnectButton.IsEnabled = this.sessionManager.CanConnect && this.Selected != null;
             this.EditButton.IsEnabled = this.Selected != null;
+            this.DetachButton.IsEnabled = count > 0;
+            this.FullscreenButton.IsEnabled = count > 0;
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -95,6 +99,20 @@ namespace RdpPortable.App
                 MessageBox.Show(this, "Connessione fallita: " + ex.Message, "RDP Portable",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void OnDetach(object sender, RoutedEventArgs e)
+        {
+            var session = this.sessionManager.ActiveSession ?? this.sessionManager.Sessions.FirstOrDefault();
+            if (session != null)
+                this.sessionManager.Detach(session);
+        }
+
+        private void OnFullScreen(object sender, RoutedEventArgs e)
+        {
+            var session = this.sessionManager.ActiveSession ?? this.sessionManager.Sessions.FirstOrDefault();
+            if (session != null)
+                this.sessionManager.ToggleFullscreen(session);
         }
 
         private void OnLayoutChanged(object sender, SelectionChangedEventArgs e)

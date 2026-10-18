@@ -15,6 +15,12 @@ Fino a **4 sessioni RDP simultanee**, ognuna con il proprio controllo MSTSC embe
 
 Il layout è commutabile a caldo: le sessioni aperte vengono riorganizzate senza disconnetterle. Il contatore `n/4 sessioni` mostra lo stato; oltre il limite l'apertura viene bloccata con un avviso.
 
+### Full screen e detach
+
+- **Doppio click** sul titolo di una scheda (o pulsante "Full screen") attiva/disattiva il full screen della singola sessione;
+- **Detach** (pulsante "⇱" sull'intestazione o bottone "Detach"): la sessione si sposta in una finestra autonoma e indipendente, utile per spostarla su un secondo monitor;
+- dalla finestra detach, il bottone **"Riaggancia"** riporta la sessione nella finestra principale (layout corrente), mentre la chiusura della finestra termina la sessione.
+
 ## Struttura
 
 ```
@@ -30,7 +36,8 @@ RdpPortable/
 │   ├── ConnectionEditorWindow   # editor completo connessione
 │   ├── RdpClientHost.cs         # wrapper MSTSC ActiveX (gateway, redirect, NLA)
 │   ├── RdpSession.cs            # singola sessione aperta (host + contenitori)
-│   ├── SessionManager.cs        # multitab + layout affiancati/impilati/griglia (max 4)
+│   ├── SessionManager.cs        # multitab, layout, detach/reattach, full screen
+│   ├── DetachedSessionWindow     # finestra autonoma per sessione detachata
 │   └── ViewModels/
 └── RdpPortable.Tests/           # xunit (importer, store, exporter)
 ```
